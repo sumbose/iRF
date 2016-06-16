@@ -2,7 +2,8 @@ useDynLib(iRF)
 
 export(combine, getTree, grow, importance, margin, MDSplot, na.roughfix,
        partialPlot, randomForest, rfImpute, treesize, tuneRF,
-       varImpPlot, varUsed, rfNews, outlier, classCenter, rfcv)
+       varImpPlot, varUsed, rfNews, outlier, classCenter, rfcv,
+       readForest, ritfun, iRF, partialPlot2var)
 
 
 S3method(print, randomForest)
