@@ -21,8 +21,8 @@ iRF <- function(x
               , ...
                ){
 
-n = nrow(X)
-p = ncol(X)
+n = nrow(x)
+p = ncol(x)
 keep_subset_var = NULL
 
 # check if y, ytest are factors with levels 0,1
