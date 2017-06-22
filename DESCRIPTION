@@ -24,5 +24,5 @@ Matthew Wiener, and the original Fortran codes by Leo Breiman and Adele Cutler)
 Description: iteratively grows weighted random forests (for binary
 classification and regression), finds high-order feature interactions in a
 stable fashion
-Maintainer: Sumanta Basu <sumbose@berkeley.edu>, Karl Kumbier
+Maintainer: Sumanta Basu <sumbose@cornell.edu>, Karl Kumbier
 <kkumbier@berkeley.edu>
