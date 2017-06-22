@@ -2,19 +2,6 @@
 
 The R package *iRF* implements iterative Random Forests, a method for iteratively growing ensemble of weighted decision trees, and detecting high-order feature interactions by analyzing feature usage on decision paths. This version uses source codes from the R package 'randomForest' by Andy Liaw and Matthew Weiner and the original Fortran codes by Leo Breiman and Adele Cutler.
 
-To download and install the package, use `devtools`:
-
-```{r install_devtool, message=FALSE}
-library(devtools)
-devtools::install_github("sumbose/iRF")
-```
-
-You can subsequently load the package with the usual R commands:
-
-```{r load, message=FALSE}
-library(iRF)
-```
-
 `iRF` adds two new features to Breiman's original Random Forest workflow:
 
 ##  A. Weighted random forest
@@ -48,7 +35,7 @@ sel_prob = rep(1/p, p)
 rf = list()
 for (iter in 1:4){
   rf[[iter]] <- randomForest(x=X[train.id,], y=Y[train.id], xtest=X[test.id,]
-                   , ytest=Y[test.id], mtry_select_prob = sel_prob)
+                   , ytest=Y[test.id], mtry.select.prob = sel_prob)
 
   # update selection probabilities for next iteration
   sel_prob = rf[[iter]]$importance/sum(rf[[iter]]$importance)
@@ -93,7 +80,7 @@ sel_prob = rep(1/p, p)
 for (iter in 1:4){
   cat(paste('iter = ', iter, ':: '))
   rf[[iter]] <- randomForest(x=X[train.id,], y=Y[train.id], xtest=X[test.id,]
-                   , ytest=Y[test.id], mtry_select_prob = sel_prob)
+                   , ytest=Y[test.id], mtry.select.prob = sel_prob)
 
   # update selection probabilities for next iteration
   sel_prob = rf[[iter]]$importance/sum(rf[[iter]]$importance)
@@ -148,7 +135,7 @@ sel_prob = rep(1/p, p)
 rf = list()
 for (iter in 1:4){
   rf[[iter]] <- randomForest(x=X[train.id,], y=Y[train.id], xtest=X[test.id,]
-                   , ytest=Y[test.id], mtry_select_prob = sel_prob
+                   , ytest=Y[test.id], mtry.select.prob = sel_prob
                    , keep.forest=TRUE)
 
   # update selection probabilities for next iteration
@@ -160,36 +147,22 @@ To pass the training data through a fitted random forest and record feature usag
 
 ```{r large_leaf, message=FALSE}
 rforest = readForest(rfobj = rf[[3]]
-                   , X=X[train.id,]
-                   , Y=as.numeric(Y[train.id])-1 # readForest only accepts numeric 0/1 valued response
-                   , leaf_node_only=FALSE
-                   , return_node_feature=TRUE
+                   , x=X[train.id,]
+                   , return.node.feature=TRUE
                     )
-head(rforest$tree_info, n=10)
+
+head(rforest$tree.info, n=10)
+head(rforest$node.feature, n=10)
 ```
 
-To find which features were used to define the node on row $8$ above, use
-
-```{r feature_node}
-which(as.vector(rforest$node_feature[8,])!=0)
-```
-
-For large data sets, setting `leaf_node_only=TRUE` can speed things up. To select all leaf nodes where the prediction is 1 and contains at least $10$ training samples, type
-
-```{r select_large_leaf} 
-select_leaf_large = 
-rforest$tree_info$status == -1 &
-rforest$tree_info$prediction == 2 &
-rforest$tree_info$size_node > 10
-```
 
 ### Finding feature interactions using random intersection trees (RIT)
 
-To find prevalent sets of features and their high-order combinations used to define these nodes, use random intersection trees with the following command:
+To find prevalent sets of features and their high-order combinations used to define these nodes, use the random intersection trees (RIT) function. The following  with the following command runs RIT on all class 1 nodes:
 
 ```{r rit}
-ritfun(rforest$node_feature[select_leaf_large,]
-     , tree_depth=5, n_child=2, n_ritree=1000)
+RIT(rforest$node.feature[rforest$tree.info$prediction - 1 == 1,], 
+    depth=5, branch=2, n_trees=1000)
 ```
 
 ### Selecting Stable interactions
@@ -201,13 +174,12 @@ ff = iRF(x=X[train.id,]
        , y=Y[train.id]
        , xtest=X[test.id,]
        , ytest=Y[test.id]
-       , n_iter=5
+       , n.iter=5
        , ntree = 500
-       , n_core = 7
-       , find_interaction=TRUE
-       , class_id = 1
-       , cutoff_nodesize_prop = 0.1
-       , n_bootstrap=20
+       , n.core = 7
+       , interactions.return=5
+       , class.id = 1
+       , n.bootstrap=20
        , verbose=FALSE
         )
 ff$interaction

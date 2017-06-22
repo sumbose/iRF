@@ -1,0 +1,228 @@
+## iterative Random Forests (iRF)
+
+The R package *iRF* implements iterative Random Forests, a method for iteratively growing ensemble of weighted decision trees, and detecting high-order feature interactions by analyzing feature usage on decision paths. This version uses source codes from the R package `randomForest` by Andy Liaw and Matthew Weiner, the original Fortran codes by Leo Breiman and Adele Cutler, and source codes from the R package `FSInteract` by Hyun Jik Kim and Rajen D. Shah.
+
+`iRF` can be loaded using the `library` command:
+```{r, message=FALSE}
+library(iRF)
+```
+
+`iRF` adds two new features to Breiman's original Random Forest workflow:
+
+##  A. Weighted random forest
+
+Unlike Breiman's original random forest, which uses uniform random sampling to select \texttt{mtry} variables during each node split, the 'randomForest' function in 'iRF' allows non-uniform sampling using a given vector of nonnegative weights (e.g., feature importances from a previous model fit). In particular, given a vector of weights $\mathbf{w} = (w_1, \ldots, w_p)$, the `mtry` variables are selected so that $P($variable $j$ is selected)$ = w_j/\sum_{j=1}^p w_j$, for $j = 1, \ldots, p$. In addition, one can supply a subset of features which will always be selected during split selection, in addition to the \texttt{mtry} features (as if setting $w_j = \infty$ for a subset of features).
+
+Based on this weighting scheme, we can iteratively grow weighted random forests, where Gini importances from the previous random forest fit are used as weights in the current iteration.
+
+```{r seed_random}
+# set seed for random number generation
+set.seed(53)                           
+```
+
+### Binary Classification:
+We simulate some data for a binary classification exercise. Out of $250$ features, only four $\{1, 2, 5, 7\}$ are important.
+```{r simulate_data}
+  # simulate data for classification
+  n <- 200
+  p <- 250
+  X <- matrix(rnorm(n * p), nrow=n)
+
+  Y <- (X[,1] > 0.35 & X[,2] > 0.35) | (X[,5] > 0.35 & X[,7] > 0.35)
+  Y <- as.factor(as.numeric(Y > 0))
+
+  train.id <- 1:(n / 2)
+  test.id <- setdiff(1:n, train.id)
+```
+
+Next, we iteratively grow weighted random forests and use feature importances from last iteration as weights.
+```{r fit_irf}
+sel.prob <- rep(1/p, p)
+
+# iteratively grow RF, use Gini importance of features as weights
+rf = list()
+for (iter in 1:4){
+  rf[[iter]] <- randomForest(x=X[train.id,], y=Y[train.id], 
+                             xtest=X[test.id,], ytest=Y[test.id], 
+                             mtry.select.prob=sel.prob)
+
+  # update selection probabilities for next iteration
+  sel.prob <- rf[[iter]]$importance
+}
+```
+
+### ROC curve
+We can measure performance of different iterations of RF on the test set:
+```{r print_auc, fig.height = 6, fig.width = 6}
+library(AUC)
+plot(0:1, 0:1, type='l', lty = 2, xlab = 'FPR', ylab = 'TPR', main='ROC Curve')
+for (iter in 1:4){
+  # performance on test set
+  cat(paste('iter = ', iter, ':: '))
+  roc.info <- roc(rf[[iter]]$test$votes[,2], Y[test.id])
+  lines(roc.info$fpr, roc.info$tpr, type='l', col=iter, lwd=2)
+  cat(paste('AUROC: ', round(100*auc(roc.info), 2), '%\n', sep=''))
+} 
+legend('bottomright', legend=paste('iter:', 1:iter), col=1:iter, lwd=2, bty='n')
+```
+
+### Variable Importance
+The outputs  of `iRF::randomForest` are objects of class `randomForest` and can be used with other functions in the R package `randomForest` directly, e.g., to visualize variable importance measures:
+
+```{r varimp, fig.width=16, fig.height=5}
+par(mfrow=c(1,4))
+for (iter in 1:4)
+  varImpPlot(rf[[iter]], n.var=10, main=paste('Variable Importance (iter:', iter, ')'))
+```
+
+
+### Regression
+
+For regression, the usage is similar:
+
+```{r regress}
+# change to a continuous response
+b <- c(rep(1, 2), rep(0, p-2))
+Y <- X %*% b + rnorm(n)
+
+# iteratively grow RF, use Gini importance of features as weights
+rf <- list()
+sel.prob <- rep(1/p, p)
+for (iter in 1:4){
+  cat(paste('iter = ', iter, ':: '))
+  rf[[iter]] <- randomForest(x=X[train.id,], y=Y[train.id], 
+                             xtest=X[test.id,], ytest=Y[test.id], 
+                             mtry.select.prob=sel.prob)
+
+  # update selection probabilities for next iteration
+  sel.prob <- rf[[iter]]$importance/sum(rf[[iter]]$importance)
+
+  # performance on test set
+  test.error = mean((rf[[iter]]$test$predicted - Y[test.id]) ^ 2) / var(Y[test.id])
+  cat(paste('test error: ', round(100*test.error, 2), '%\n', sep=''))
+}
+```
+
+### Parallel implementation
+The weighted random forests can be grown in parallel on multiple servers, using the `doMC` library:
+```{r setup_parallel, results="hide"}
+# set up cores for parallel implementation
+library(doMC)
+registerDoMC()
+n.cores <- 4
+options(cores=n.cores)
+n.tree.per.core <- 30
+
+rfpar <- foreach(n.tree=rep(n.tree.per.core, n.cores), 
+                 .combine=combine, .multicombine=TRUE)%dopar%{
+   randomForest(x=X[train.id,], y=Y[train.id], ntree=n.tree)
+}
+
+
+```
+
+## B. Detect high-order feature interactions in a stable fashion
+`iRF` detects high-order interaction among features by analyzing feature usage on the decision paths of large nodes in a random forest. In particular, given a (weighted) random forest fit, `iRF` (i) passes the training data through the fitted forest and records the features used on the associated decision paths; (ii) Applies a weighted version of the random intersection tree (RIT) algorithm proposed by [Shah and Meinshausen (2014)](http://jmlr.org/papers/v15/shah14a.html) to find high-order feature combinations prevalent in the decision paths, where weights are determined by user specified features; (iii) performs the above two steps on many bootstrap replicates of the training set to assess stability of the features and their interactions. 
+
+### Feature usage on decision paths of large leaf nodes
+Consider a classification example as before:
+```{r simulate_data2}
+  # simulate data for classification
+  n <- 600 
+  p <- 250
+  X <- matrix(rnorm(n*p), nrow=n)
+
+  Y <- (X[,1] > 0.35 & X[,2] > 0.35) | (X[,5] > 0.35 & X[,7] > 0.35)
+  Y <- as.factor(as.numeric(Y > 0))
+
+  train.id <- 1:(n/2)
+  test.id <- setdiff(1:n, train.id)
+```
+
+Next, we iteratively grow weighted random forests as before, but save the forest components for further processing.
+```{r fit_irf2}
+sel.prob <- rep(1/p, p)
+
+# iteratively grow RF, use Gini importance of features as weights
+rf <- list()
+for (iter in 1:4){
+  rf[[iter]] <- randomForest(x=X[train.id,], y=Y[train.id], 
+                             xtest=X[test.id,], ytest=Y[test.id], 
+                             mtry.select.prob=sel.prob, 
+                             keep.forest=TRUE, track.nodes=TRUE)
+
+  # update selection probabilities for next iteration
+  sel.prob <- rf[[iter]]$importance / sum(rf[[iter]]$importance)
+}
+```
+
+To read feature usage on nodes, use the function `readForest`. This function can be run in parallel with the argument `n.core`, provided `doMC` has been set up for parallel processing. This function will calculate the the decrease in purity of responses in each leaf node relative to the full data, provided `wt.pred.accuracy` is TRUE.
+
+```{r large_leaf, message=FALSE}
+y.numeric <- as.numeric(Y) - 1
+rforest <- readForest(rfobj=rf[[3]], x=X[train.id,], y=y.numeric[train.id], 
+                      wt.pred.accuracy=TRUE)
+
+head(rforest$tree.info, n=10)
+head(rforest$node.feature, n=10)
+```
+
+
+### Finding feature interactions using random intersection trees (RIT)
+
+To find prevalent sets of features and their high-order combinations used to define these nodes, use the random intersection trees (RIT) function. The following  with the following command runs RIT on all class 1 nodes, sampling each leaf node with probability proportional to the number of observations in each leaf node:
+
+```{r rit}
+class1.nodes <- rforest$tree.info$prediction - 1 == 1
+wt <- rforest$tree.info$size.node[class1.nodes]
+RIT(rforest$node.feature[class1.nodes,], weights=wt,
+    depth=5, branch=2, n_trees=100)
+```
+
+### Selecting Stable interactions
+
+The function `iRF` combines all the above steps and uses bootstrap aggregation to assess stability of the selected interactions. The final output contains a list of named numeric vectors containing the stability scores. 
+
+```{r irf, message=FALSE}
+ff <- iRF(x=X[train.id,], 
+         y=Y[train.id], 
+         xtest=X[test.id,], 
+         ytest=Y[test.id], 
+         n.iter=5, 
+         n.core=n.cores,
+         interactions.return=5,
+         n.bootstrap=10
+        )
+ff$interaction
+```
+
+The selected interactions can be visualized using simple R functions like `dotchart`:
+
+```{r dotchart, fig.height=6, fig.width=6}
+toplot <- rev(ff$interaction[[5]])
+dotchart(toplot[1:min(20, length(toplot))], xlab='Stability Score', 
+         main='Prevalent Features/Interactions \n on Decision paths')
+```
+
+### Visualizing partial dependence of two interacting features
+
+The partial dependence function of two putatively interacting features can be calculated from data and visualized using the `partialPlot2var` function in the package. This feature uses the `persp3d()` function from the `rgl` package.
+
+```{r setup, message=FALSE}
+library(knitr)
+library(rgl)
+knit_hooks$set(webgl = hook_webgl)
+```
+Here is an example of an interactive partial dependence plot:
+
+```{r partialplot2var, fig.height=7, fig.width=7, webgl=TRUE}
+ff <- partialPlot2var(x1=X[,1], x2=X[,2], y=as.numeric(Y)-1, gridlength=6, 
+                      x1lab='X1', x2lab='X2', ylab='P(Y=1)', plot.colorbar=FALSE)
+
+```
+
+
+ 
+
+
+

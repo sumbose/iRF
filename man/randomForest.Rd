@@ -18,8 +18,9 @@
 \method{randomForest}{default}(x, y=NULL,  xtest=NULL, ytest=NULL, ntree=500,
              mtry=if (!is.null(y) && !is.factor(y))
              max(floor(ncol(x)/3), 1) else floor(sqrt(ncol(x))),
-             mtry_select_prob = rep(1/ncol(x), ncol(x)),
-             keep_subset_var = NULL,
+             mtry.select.prob = rep(1/ncol(x), ncol(x)),
+             keep.subset.var = NULL,
+             track.nodes=FALSE,
              replace=TRUE, classwt=NULL, cutoff, strata,
              sampsize = if (replace) nrow(x) else ceiling(.632*nrow(x)),
              nodesize = if (!is.null(y) && !is.factor(y)) 5 else 1,
@@ -55,14 +56,16 @@
     split.  Note that the default values are different for
     classification (sqrt(p) where p is number of variables in \code{x})
     and regression (p/3)}
-  \item{mtry_select_prob}{A p-dimensional vector of nonnegative weights 
+  \item{mtry.select.prob}{A p-dimensional vector of nonnegative weights 
     (need not sum to one), to be used for importance sampling 
 	during random selection of splitting variables at nodes}
-  \item{keep_subset_var}{(optional) a subset of variables to be used 
+  \item{keep.subset.var}{(optional) a subset of variables to be used 
      during every node split, in addition to the \code{mtry} 
 	 selected variables. If specified, the corresponding weights
      in \code{mtry_select_prob} are ignored, and importance sampling 
 	 is carried out on the rest of the variables.}
+  \item{track.nodes}{if TRUE, will keep track of the leaf nodes that each
+    observation falls in for each tree.}
   \item{replace}{Should sampling of cases be done with or without
     replacement?}
   \item{classwt}{Priors of the classes.  Need not add up to one.
@@ -164,6 +167,8 @@
     residuals divided by \code{n}.}
   \item{rsq}{(regression only) ``pseudo R-squared'': 1 - \code{mse} /
     Var(y).}
+  \item{obs.nodes}{a matrix with \code{nrow(x)} rows and \code{ntree} columns
+    indicating the leaf node index for each observation in each tree.}
   \item{test}{if test set is given (through the \code{xtest} or additionally
   \code{ytest} arguments), this component is a list which contains the
   corresponding \code{predicted}, \code{err.rate}, \code{confusion},

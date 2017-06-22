@@ -29,7 +29,7 @@ c     SUBROUTINE BUILDTREE
      1     selprob, subsetvar, mcard,
      1     iv,
      1     nodeclass, ndbigtree, win, wr, wl, mred, nuse, mind,
-     1    	tmpcheck)
+     1     tmpcheck)
 
 c     Buildtree consists of repeated calls to two subroutines, Findbestsplit
 c     and Movedata.  Findbestsplit does just that--it finds the best split of
@@ -69,7 +69,8 @@ c     main program.
       call zerv(nodestart,nrnodes)
       call zerv(nodepop,nrnodes)
       call zermr(classpop,nclass,nrnodes)
-	  
+
+c     initialize matrices for tracking observations and variables 
 
       do j=1,nclass
          classpop(j, 1) = tclasspop(j)
@@ -78,8 +79,19 @@ c     main program.
       nodestart(1) = 1
       nodepop(1) = nuse
       nodestatus(1) = 2
+
+      depth = 0
 c     start main loop
       do 30 kbuild = 1, nrnodes
+
+         if (kbuild .ge. 2 ** depth) then
+          depth = depth + 1
+         end if
+
+         if (depth .gt. mcard) then 
+          mcard = 0
+         end if  
+
 c         call intpr("kbuild", 6, kbuild, 1)
 c         call intpr("ncur", 4, ncur, 1)
          if (kbuild .gt. ncur) goto 50
@@ -115,11 +127,10 @@ c     If the node is terminal, move on.  Otherwise, split.
             endif
          endif
 
+
          call movedata(a,ta,mdim,nsample,ndstart,ndend,idmove,ncase,
      1        msplit,cat,best,ndendl)
-c         call intpr("ndend", 5, ndend, 1)
-c         call intpr("ndendl", 6, ndendl, 1)
-c     leftnode no.= ncur+1, rightnode no. = ncur+2.
+         
          nodepop(ncur+1) = ndendl - ndstart + 1
          nodepop(ncur+2) = ndend - ndendl
          nodestart(ncur+1) = ndstart
