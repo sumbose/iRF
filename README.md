@@ -7,10 +7,11 @@ This version uses source codes from the R package `randomForest` by Andy Liaw
 and Matthew Weiner and the original Fortran codes by Leo Breiman and Adele
 Cutler.
 
-To download and install the package, clone this repo and run the command
+To download and install the package, use `devtools`
 
 ```r
-R CMD INSTALL iRF2.0
+library(devtools)
+devtools::install_github("sumbose/iRF")
 ```
 
 You can subsequently load the package with the usual R commands:

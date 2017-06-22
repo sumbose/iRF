@@ -18,6 +18,11 @@ Suggests:
     rgl
 LinkingTo:
     Rcpp
-Author: Sumanta Basu and Karl Kumbier (based on source codes from the R package 'randomForest' by Andy Liaw and Matthew Wiener and the original Fortran codes by Leo Breiman and Adele Cutler)
-Description: iteratively grows weighted random forests (for binary classification and regression), finds high-order feature interactions in a stable fashion
-Maintainer: Sumanta Basu <sumbose@berkeley.edu>
+Author: Sumanta Basu and Karl Kumbier (based on source codes from the R package
+'FSInteract' by Hyun Jik Kim and  Rajen D. Shah, 'randomForest' by Andy Liaw and
+Matthew Wiener, and the original Fortran codes by Leo Breiman and Adele Cutler)
+Description: iteratively grows weighted random forests (for binary
+classification and regression), finds high-order feature interactions in a
+stable fashion
+Maintainer: Sumanta Basu <sumbose@berkeley.edu>, Karl Kumbier
+<kkumbier@berkeley.edu>
