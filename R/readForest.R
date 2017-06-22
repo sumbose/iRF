@@ -1,185 +1,143 @@
-#   PASS DATA THROUGH FOREST
-readForest <- function(rfobj  # a randomForest object with forest component in it
-                     , X   # n x p data matrix 
-                     , Y=NULL   # label vector (numeric, 0/1)
-                     , return_node_feature=TRUE
-                     , return_node_data=TRUE
-                     , leaf_node_only = TRUE
-                     , verbose = TRUE
-                       ){
-if (is.null(rfobj$forest))
+readForest <- function(rfobj, x, y=NULL, 
+                       return.node.feature=TRUE,
+                       wt.pred.accuracy=FALSE,
+                       n.core=1){
+ 
+  if (is.null(rfobj$forest))
     stop('No Forest component in the randomForest object')
-
-if (!is.null(Y)){
-  if (!is.numeric(Y)){
-    stop("Y must be a numeric vector")
-  }
-  else{
-     tmp = unique(Y)
-     if (!setequal(tmp, c(0,1)))
-       stop('Y must be 0-1 valued')
-  }
-
-  if (length(Y)!=nrow(X))
-      stop("Number of observations in X, Y do not match!")
+  if (wt.pred.accuracy & is.null(y))
+    stop('y required to evaluate prediction accuracy')
+ 
+  ntree <- rfobj$ntree
+  p <- ncol(x)
+  n <- nrow(x)
+  out <- list()
+  
+  # read leaf node data from each tree in the forest 
+  rd.forest <- mclapply(1:ntree, readTree, rfobj=rfobj, x=x, y=y,
+                        return.node.feature=return.node.feature,
+                        wt.pred.accuracy=wt.pred.accuracy,
+                        mc.cores=n.core)
+ 
+  out$tree.info <- rbindlist(lapply(rd.forest, function(tt) tt$tree.info))
+  # aggregate sparse feature matrix across forest
+  nf <- lapply(rd.forest, function(tt) tt$node.feature)
+  nf <- aggregateNodeFeature(nf)
+  out$node.feature <- sparseMatrix(i=nf[,1], j=nf[,2], dims=c(max(nf[,1]), p))
+  return(out)
+  
 }
 
-n = nrow(X)
-p = ncol(X)
-ncol_tree_info = ifelse(is.null(Y), 9, 12)
+readTree <- function(rfobj, k, x, y, return.node.feature, wt.pred.accuracy) {
+  n <- nrow(x)
+  p <- ncol(x)
+  ntree <- rfobj$ntree
+  
+  # Read tree level data from RF
+  out <- list()
+  out$tree.info <- as.data.frame(getTree(rfobj, k))
+  out$tree.info$node.idx <- 1:nrow(out$tree.info)
+  parents <- getParent(out$tree.info)
+  out$tree.info$parent <- as.integer(parents)
+  out$tree.info$tree <- as.integer(k)
+  out$tree.info$size.node <- 0L 
+  
+  # replicate each leaf node in node.feature based on specified sampling.
+  select.node <- out$tree.info$status == -1
+  rep.node <- rep(0, nrow(out$tree.info))
+  out$tree.info <- select(out$tree.info, prediction, node.idx, parent, tree, size.node)
 
-store<-foreach(k=1:rfobj$ntree, .combine=rbind, .multicombine=TRUE, .packages='iRF')%dopar%{
-   if (verbose==TRUE & (k%%50==0)) {print(paste('tree:', k))}
-   tt = getTree(rfobj, k=k, labelVar=FALSE); rownames(tt) <- NULL
-   tt_out=readTree(rfTree = tt, X = X, Y = Y
-                  , return_node_feature=return_node_feature
-                  , return_node_data=return_node_data
-                  , leaf_node_only=leaf_node_only)
-   
-   tt_out$tree_info$tree_id=k
-
-   tmp=as.matrix(tt_out$tree_info)
-   if (return_node_feature){
-   colnames(tt_out$node_feature)<- seq(ncol(tt_out$node_feature))
-   tmp=cbind(tmp, tt_out$node_feature)
-   }
-   if (return_node_data){
-   colnames(tt_out$node_data) <- seq(ncol(tt_out$node_data))
-   tmp=cbind(tmp, tt_out$node_data)
-   }
-   tmp
-}
-rownames(store) <- NULL
-
-# account for new column: tree_id
-ncol_tree_info = ncol_tree_info+1
-
-out=list()
-out$tree_info =
-as.data.frame(store[,1:ncol_tree_info]
-            , stringsAsFactors=FALSE
-            , check.names=FALSE
-             )
-
-if (return_node_feature)
-out$node_feature = store[,(ncol_tree_info+seq(p))]
-if (return_node_data)
-out$node_data = store[,(ncol_tree_info+p*(return_node_feature)+seq(n))]
-
-return(out)
-}
-
-
-
-#######################################
-#  PASS DATA THROUGH A TREE
-#######################################
-readTree <- function(rfTree # a single tree in the forest, as in the output from getTree() function
-                 , X  # n x p matrix of features
-                 , Y=NULL  # numeric (0/1) p-vector of labels (NOT as factors)
-                 , return_node_feature = TRUE
-                 , return_node_data = TRUE
-                 , leaf_node_only = TRUE
-                  ){
-   tt=as.data.frame(rfTree, check.names=FALSE, stringsAsFactors=FALSE)
-   
-   n=nrow(X)
-   p=ncol(X)
-   n_node=nrow(tt)
-   
-   node_face=array(FALSE, c(n_node, p))
-   node_composition=array(FALSE, c(n_node, n))
-      
-   tt$parent=0
-   tt$size_node=0
-   tt$depth=0
-
-   if (!is.null(Y)){
-     tt$size_0=0
-     tt$Gini=0
-     tt$Decrease_Gini=0
-   }
-   
-   # add parent information
-   leaf_id=(tt$status==-1)
-   for (i in which(!leaf_id)){
-      tt$parent[tt$"left daughter"[i]]=i
-      tt$parent[tt$"right daughter"[i]]=i
-   }
-   
-   # initialize
-   node_composition[1,]=TRUE
-   tt$size_node[1]=n
-   tt$depth[1]=0   
-
-   if (return_node_feature)
-   node_face[1,]=FALSE
-   
-   if (!is.null(Y)){
-   tt$size_0[1]=sum(Y==0)
-   tt$Gini[1]=2*tt$size_0[1]*(n-tt$size_0[1])/(n^2)
-   }
-
-   # run  over all non-leaf nodes 
-   for (i in which(!leaf_id)){
-
-      d_left=tt$"left daughter"[i]
-      d_right=tt$"right daughter"[i]
-      
-      split_var=tt$"split var"[i]
-      split_pt=tt$"split point"[i]
-
-      parent_id=node_composition[i,]
-      d_left_id=(X[,split_var] < split_pt) & parent_id
-      d_right_id=(X[,split_var] >= split_pt) & parent_id
-
-      if (return_node_feature){
-      node_face[d_left,]=node_face[i,]
-      node_face[d_right,]=node_face[i,]
-      node_face[c(d_left, d_right), split_var]=TRUE
-      }
-      
-
-      node_composition[d_left,]=d_left_id
-      node_composition[d_right,]=d_right_id
-
-      
-      tt$size_node[d_left]=sum(d_left_id)
-      tt$size_node[d_right]=sum(d_right_id)
-      
-      tt$depth[d_left]=tt$depth[i]+1
-      tt$depth[d_right]=tt$depth[i]+1
-      
-  if (!is.null(Y)){
-      tt$size_0[d_left]=sum(Y[d_left_id]==0)
-      tt$size_0[d_right]=sum(Y[d_right_id]==0)
-      
-      tt$Gini[d_left]=2*tt$size_0[d_left]*
-         (tt$size_node[d_left]-tt$size_0[d_left])/
-         (tt$size_node[d_left])^2
-      tt$Gini[d_right]=2*tt$size_0[d_right]*
-         (tt$size_node[d_right]-tt$size_0[d_right])/
-         (tt$size_node[d_right])^2
-      
-      tt$Decrease_Gini[i]=tt$Gini[i]-
-         (tt$size_node[d_left]*tt$Gini[d_left]+
-         tt$size_node[d_right]*tt$Gini[d_right])/
-         tt$size_node[i]
+  if (is.null(rfobj$obs.nodes)) {
+    # if nodes not tracked, pass data through forest to get leaf counts
+    fit.data <- passData(rfobj, x, out$tree.info, k)
+    leaf.counts <- rowSums(fit.data[select.node,])
+    which.leaf <- apply(fit.data[select.node,], MAR=2, which)
+    leaf.idx <- as.integer(which(select.node))
+    if (wt.pred.accuracy) leaf.sd <- c(by(y, which.leaf, sdNode)) 
+  } else {
+    leaf.counts <- table(rfobj$obs.nodes[,k])
+    leaf.idx <- as.integer(names(leaf.counts)) 
+    if (wt.pred.accuracy) leaf.sd <- c(by(y, rfobj$obs.nodes[,k], sdNode))
   }
 
+  out$tree.info$size.node[leaf.idx] <- as.integer(leaf.counts)
+  if (wt.pred.accuracy) {
+    out$tree.info$dec.purity <- 0
+    out$tree.info$dec.purity[leaf.idx] <- pmax((sd(y) - leaf.sd) / sd(y), 0)
   }
-
-select_node = 1:nrow(tt)
-if (leaf_node_only)
-  select_node = tt$status == -1
-
-out=list()
-out$tree_info=tt[select_node,]
-if (return_node_feature)
-    out$node_feature = node_face[select_node,]
-if (return_node_data)
-    out$node_data = node_composition[select_node,]
-
-return(out)
+  
+  out$tree.info <- out$tree.info[select.node,]
+  rep.node[select.node] <- 1
+  
+  # Extract decision paths from leaf nodes as binary sparse matrix
+  if (return.node.feature) {
+    row.offset <- 0
+    var.nodes <- as.integer(rfobj$forest$bestvar[,k])
+    total.rows <- n #sum(rep.node[select.node])
+    sparse.idcs <- nodeVars(var.nodes, 
+                            as.integer(length(select.node)), 
+                            as.integer(p),
+                            as.integer(parents),
+                            as.integer(select.node),
+                            as.integer(rep.node),
+                            as.integer(row.offset),
+                            matrix(0L, nrow=(total.rows * p), ncol=2))
+    out$node.feature <- sparse.idcs[!sparse.idcs[,1] == 0,]
+  }
+  
+  return(out)
 }
 
+
+getParent <- function(tree.info) {
+  # Generate a vector of parent node indices from output of getTree
+  parent <- match(1:nrow(tree.info), c(tree.info[,'left daughter'],
+                                       tree.info[,'right daughter']))
+  parent <- parent %% nrow(tree.info)
+  parent[1] <- 0
+  return(parent)
+}
+
+
+passData <- function(rfobj, x, tt, k) {
+  # Pass data through rf object
+  leaf.id <- tt$status == -1
+  n <- nrow(x)
+  n.node <- rfobj$forest$ndbigtree[k]
+  node.composition <- matrix(FALSE, nrow=n.node, ncol=n)
+  node.composition[1,] <- TRUE
+  
+  
+  for (i in which(!leaf.id)){   
+    # determine children and split point for current node
+    d.left <- tt$"left daughter"[i]
+    d.right <- tt$"right daughter"[i]
+    split.var <- tt$"split var"[i]
+    split.pt <- tt$"split point"[i]
+    
+    parent.id <- node.composition[i,]
+    d.left.id <- (x[,split.var] <= split.pt) & parent.id
+    d.right.id <- (x[,split.var] > split.pt) & parent.id
+    
+    node.composition[d.left,] <- d.left.id
+    node.composition[d.right,] <- d.right.id
+  }
+  
+  return(node.composition)
+}
+
+aggregateNodeFeature <- function(nf) {
+  # aggregate list of node feature data returned from each tree
+
+  ntree <- length(nf)
+  row.offset <- c(0, cumsum(sapply(nf, function(z) max(z[,1])))[-ntree])
+  n.rows <- sapply(nf, nrow)
+  nf <- do.call(rbind, nf)
+  nf[,1] <- nf[,1] + rep(row.offset, times=n.rows)
+  return(nf)
+}
+
+sdNode <- function(x) {
+  sd.node <- ifelse(length(x) == 1, 0, sd(x))
+  return(sd.node)
+}

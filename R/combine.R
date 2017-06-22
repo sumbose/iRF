@@ -5,6 +5,7 @@ combine <- function(...) {
    rflist <- list(...)
    areForest <- sapply(rflist, function(x) inherits(x, "randomForest")) 
    if (any(!areForest)) stop("Argument must be a list of randomForest objects")
+   
    ## Use the first component as a template
    rf <- rflist[[1]]
    classRF <- rf$type == "classification"
@@ -12,7 +13,9 @@ combine <- function(...) {
    ntree <- sum(trees)
    rf$ntree <- ntree
    nforest <- length(rflist)
-   haveTest <- ! any(sapply(rflist, function(x) is.null(x$test)))
+   haveTest <- !any(sapply(rflist, function(x) is.null(x$test)))
+
+   
    ## Check if predictor variables are identical.
    vlist <- lapply(rflist, function(x) rownames(importance(x)))
    numvars <- sapply(vlist, length)
@@ -23,8 +26,11 @@ combine <- function(...) {
            stop("Predictor variables are different in the randomForest objects.")
    }
    ## Combine the forest component, if any
+
    haveForest <- sapply(rflist, function(x) !is.null(x$forest))
+   
    if (all(haveForest)) {
+
        nrnodes <- max(sapply(rflist, function(x) x$forest$nrnodes))
        rf$forest$nrnodes <- nrnodes
        rf$forest$ndbigtree <-
@@ -64,6 +70,7 @@ combine <- function(...) {
    } else {
        rf$forest <- NULL
    }
+
    
    if (classRF) {
        ## Combine the votes matrix: 
@@ -150,6 +157,14 @@ combine <- function(...) {
        for(i in 1:nforest)
            rf$proximity <- rf$proximity + rflist[[i]]$proximity * rflist[[i]]$ntree
        rf$proximity <- rf$proximity / ntree
+   }
+
+ 
+   ## If forests track leaf nodes that observations fall into, combine across
+   ## trees 
+   have.obsnodes <- all(sapply(rflist, function(x) !is.null(x$obs.nodes)))
+   if (have.obsnodes) {
+    rf$obs.nodes <- do.call(cbind, lapply(rflist, function(x) x$obs.nodes))
    }
    
    ## Set confusion matrix and error rates to NULL

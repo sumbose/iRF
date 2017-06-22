@@ -10,47 +10,36 @@
   distribute computation across available cores.
 }
 \usage{
-  function(rfobj, X, Y=NULL, return_node_feature=TRUE,
-return_node_data=TRUE, leaf_node_only=TRUE, verbose=TRUE)
+  function(rfobj, x, 
+           return.node.feature=TRUE, 
+           wt.pred.accuracy=FALSE,
+           n.core=1)
 }
 \arguments{
   \item{rfobj}{a fitted \code{randomForest} object with the
-    \code{forest} component in it }
-  \item{X}{numeric matrix with the same number of predictors used in
+    \code{forest} component in it}
+  \item{x}{numeric matrix with the same number of predictors used in
     \code{rfobj} fit}
-  \item{Y}{Optionally, a numeric vector containing only 0 and 1}
-  \item{return_node_feature}{if TRUE, returns a matrix containing features
+  \item{y}{a numeric vector specifying response values}
+  \item{return.node.feature}{if TRUE, returns a matrix containing features
     used to define the decision rule associated with a node}
-  \item{return_node_data}{if TRUE, returns composition of nodes, i.e.,
-    data points in X which fell in a node}
-  \item{leaf_node_only}{if TRUE, only retain information on leaf nodes
-    in the output}
-  \item{verbose}{if TRUE, print progress of the algorithm on the screen}
+  \item{wt.pred.accuracy}{Should leaf nodes be sampled proportional to both
+    size and decrease in variabiliy of responses?}
 }
 \value{ A list containing the following items:
-  \item{tree_info}{a data frame with number of rows equal to total
-    number of nodes in the forest. The first six columns are as in 
-    the output of \code{\link{getTree}}: \code{left daughter}, \code{right daughter},
-    \code{split var}, \code{split point}, \code{status},
-    \code{prediction}.
-
-    If Y is not provided, the rest of the columns are:
-    \code{parent} (parent of every node), \code{size_node} (number of data
-    points falling in a node), \code{depth} (depth of the node in a
-    tree) and \code{tree_id} (index of the tree in the forest in which the node lives)
-
-    If Y is provided, contains three additional columns:
-    \code{size_0} (number of observations of class \code{0} falling in a
-      node), \code{Gini} (Gini impurity of a node) and
-    \code{Decrease_Gini} (Decrease in Gini impurity when this node is split)
-    }
-  \item{node_feature}{if return_node_feature = TRUE, returns a TRUE/FALSE matrix
-    with ncol(X) columns, each row corresponding to a node in the
+  \item{tree.info}{a data frame with number of rows equal to total number of
+    nodes in the forest, giving node level attributes: 
+    \code{prediction} (predicted response of leaf node), 
+    \code{node.idx} (the forest level node index of the leaf), 
+    \code{parent} (index of parent node), 
+    \code{size.node} (number of data points falling in a node), 
+    \code{tree} (index of the tree in the forest in which the node lives), 
+    \code{dec.purity} (if wt.pred.accuracy=TRUE, the decrease in standard 
+    deviation of responses relative to the full data).}
+  \item{node.feature}{if return.node.feature = TRUE, returns a sparse matrix
+    with ncol(x) columns, each row corresponding to a leaf node in the
     forest. The entries indicate which features were used to define the
     decision rule associated with a node}
-  \item{node_data}{if return_node_data is TRUE, returns a TRUE/FALSE
-    matrix with nrow(X) columns. Each row corresponds to a node in the
-    forest. The entries indicate which data points in X fell in a particular node}
 }
 
 \seealso{
@@ -73,23 +62,21 @@ return_node_data=TRUE, leaf_node_only=TRUE, verbose=TRUE)
   rf <- randomForest(x=X[train.id,], y=Y[train.id], xtest=X[test.id,],
                      ytest=Y[test.id], keep.forest=TRUE)
 
-  rforest = readForest(rfobj = rf, X=X[train.id,]
-                      , Y = as.numeric(Y[train.id])-1, leaf_node_only=FALSE)
+  rforest <- readForest(rfobj=rf, x=X[train.id,], y=as.numeric(Y[train.id])-1)
 
   head(rforest$tree_info)
 
   # only consider leaf nodes
-  rforest = readForest(rfobj = rf, X=X[train.id,]
-                      , Y = as.numeric(Y[train.id])-1, leaf_node_only=TRUE)
+  rforest <- readForest(rfobj=rf, x=X[train.id,], y = as.numeric(Y[train.id])-1)
 
   # count number of leaf nodes with at least 5 observations
-  sum(rforest$tree_info$size_node > 5)
+  sum(rforest$tree.info$size.node > 5)
 
   # pass test data through the forest
-  rforest = readForest(rfobj=rf, X[test.id,], Y=as.numeric(Y[test.id])-1)
+  rforest <- readForest(rfobj=rf, X[test.id,], y=as.numeric(Y[test.id])-1)
 
   # count number of leaf nodes with at least 5 observations
-  sum(rforest$tree_info$size_node > 5)
+  sum(rforest$tree.info$size.node > 5)
 
 }
 

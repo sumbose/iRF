@@ -420,7 +420,8 @@ void predictClassTree(double *x, int n, int mdim, int *treemap,
 		      int *bestvar, int *nodeclass,
 		      int treeSize, int *cat, int nclass,
 		      int *jts, int *nodex, int maxcat) {
-    int m, i, j, k, *cbestsplit;
+    
+  int m, i, j, k, *cbestsplit;
 	double dpack;
 
     /* decode the categorical splits */
