@@ -21,7 +21,8 @@
       rit.param=list(depth=5, ntree=100, nchild=2, 
                      class.cut=NULL, class.id=1), 
       varnames.grp=NULL,
-      n.bootstrap=30, 
+      n.bootstrap=30,
+      bootstrap.forest=TRUE, 
       verbose=TRUE, ...
      )
 }
@@ -64,6 +65,9 @@
     ``hyper-feature''s to conduct random intersection trees}
   \item{n.bootstrap}{Number of bootstraps replicates used to calculate
     stability scores of interactiosn obtained by RIT}
+  \item{bootstrap.forest}{Should a new Random Forest be constructed for each
+    bootstrap sample to evaluate stability? Setting to FALSE results in faster
+    runtime.}
   \item{verbose}{Display progress messages and intermediate outputs on screen?}
   \item{...}{additional arguments passed to iRF::randomForest}
 }
