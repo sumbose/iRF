@@ -117,8 +117,7 @@ iRF <- function(x, y,
       
       summary.interact <- summarizeInteract(interact.list[[iter]], varnames=varnames.new)
       stability.score[[iter]] <- summary.interact$interaction
-      prevalence[[iter]] <- summary.interact$prevalence
-       
+    
     } # end if (find_interaction)
     
     ## 3: update mtry.select.prob 
@@ -140,7 +139,6 @@ iRF <- function(x, y,
   out$rf.list <- rf.list
   if (!is.null(interactions.return)){
     out$interaction <- stability.score
-    #out$prevalence <- prevalence weighted RIT prevalence not accurate
   }
   return(out)
 }
@@ -237,7 +235,7 @@ summarizeInteract <- function(store.out, varnames=NULL){
     prev.tbl <- prev.tbl / n.bootstrap
     prev.tbl <- prev.tbl[names(int.tbl)]
   } else {
-    return(character(0))
+    return(list(interaction=numeric(0), prevalence=numeric(0)))
   }
   
   if (!is.null(varnames)) {
