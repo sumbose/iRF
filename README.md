@@ -28,7 +28,7 @@ curl -O http://r.research.att.com/libs/gfortran-4.8.2-darwin13.tar.bz2
 sudo tar fvxz gfortran-4.8.2-darwin13.tar.bz2 -C /
 ```
 
-Binaries are available in the `binaries` directory and can be installed using
+Binaries are available for OSX and linux in the `binaries` directory and can be installed using
 the command:
 
 ```r
