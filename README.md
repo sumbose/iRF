@@ -20,7 +20,7 @@ You can subsequently load the package with the usual R commands:
 library(iRF)
 ```
 
-This package requires C++11. OSX users may need to intall gfortran to compile,
+This package requires C++11. OSX users may need to install gfortran to compile,
 which can be done with the following commands:
 
 ```r
