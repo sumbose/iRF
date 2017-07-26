@@ -7,17 +7,19 @@ readForest <- function(rfobj, x, y=NULL,
     stop('No Forest component in the randomForest object')
   if (wt.pred.accuracy & is.null(y))
     stop('y required to evaluate prediction accuracy')
- 
+  if (n.core > 1) registerDoParallel(cores=n.core) 
   ntree <- rfobj$ntree
   p <- ncol(x)
   n <- nrow(x)
   out <- list()
   
-  # read leaf node data from each tree in the forest 
-  rd.forest <- mclapply(1:ntree, readTree, rfobj=rfobj, x=x, y=y,
-                        return.node.feature=return.node.feature,
-                        wt.pred.accuracy=wt.pred.accuracy,
-                        mc.cores=n.core)
+  # read leaf node data from each tree in the forest
+  tt <- NULL
+  rd.forest <- foreach(tt=1:ntree) %dopar% {
+    readTree(rfobj=rfobj, k=tt, x=x, y=y,
+      return.node.feature=return.node.feature,
+      wt.pred.accuracy=wt.pred.accuracy)
+  }
  
   out$tree.info <- rbindlist(lapply(rd.forest, function(tt) tt$tree.info))
   # aggregate sparse feature matrix across forest
@@ -45,13 +47,13 @@ readTree <- function(rfobj, k, x, y, return.node.feature, wt.pred.accuracy) {
   # replicate each leaf node in node.feature based on specified sampling.
   select.node <- out$tree.info$status == -1
   rep.node <- rep(0, nrow(out$tree.info))
-  out$tree.info <- select(out$tree.info, prediction, node.idx, parent, tree, size.node)
+  out$tree.info <- select_(out$tree.info, 'prediction', 'node.idx', 'parent', 'tree', 'size.node')
 
   if (is.null(rfobj$obs.nodes)) {
     # if nodes not tracked, pass data through forest to get leaf counts
     fit.data <- passData(rfobj, x, out$tree.info, k)
     leaf.counts <- rowSums(fit.data[select.node,])
-    which.leaf <- apply(fit.data[select.node,], MAR=2, which)
+    which.leaf <- apply(fit.data[select.node,], MARGIN=2, which)
     leaf.idx <- as.integer(which(select.node))
     if (wt.pred.accuracy) leaf.sd <- c(by(y, which.leaf, sdNode)) 
   } else {

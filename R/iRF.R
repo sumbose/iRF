@@ -14,7 +14,6 @@ iRF <- function(x, y,
                 n.bootstrap=30,
                 bootstrap.forest=TRUE, 
                 verbose=TRUE,
-                keep.subset.var=NULL,
                ...) {
  
 
@@ -30,7 +29,7 @@ iRF <- function(x, y,
   n <- nrow(x)
   p <- ncol(x)
   class.irf <- is.factor(y)
-  if (n.core > 1) registerDoMC(n.core)  
+  if (n.core > 1) registerDoParallel(cores=n.core)  
 
   rf.list <- list()
   if (!is.null(interactions.return)) {
@@ -75,7 +74,8 @@ iRF <- function(x, y,
           sample.id <- sample(n, n, replace=TRUE)
         }
         
-        if (bootstrap.forest) { 
+        if (bootstrap.forest) {
+          i <- NULL 
           #2.1.1: fit random forest on bootstrap sample
           rf.b <- foreach(i=1:length(ntree.id), .combine=combine, 
                           .multicombine=TRUE, .packages='iRF') %dopar% {
@@ -211,7 +211,7 @@ groupFeature <- function(node.feature, grp){
   sparse.mat <- is(node.feature, 'Matrix')
   
   grp.names <- unique(grp)
-  makeGroup <- function(x, g) apply(as.matrix(x[,grp == g]), MAR=1, max) 
+  makeGroup <- function(x, g) apply(as.matrix(x[,grp == g]), MARGIN=1, max) 
   node.feature.new <- sapply(grp.names, makeGroup, x=node.feature)
   if (sparse.mat) node.feature.new <- Matrix(node.feature.new, sparse=TRUE)
   

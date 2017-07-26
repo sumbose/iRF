@@ -4,19 +4,18 @@ importFrom(Matrix, Matrix, t, sparseMatrix)
 importFrom(methods, is)
 importFrom(AUC, auc, roc)
 importFrom(data.table, data.table, rbindlist)
-importFrom(dplyr, select)
-importFrom(grDevices, rainbow)
+importFrom(dplyr, select, select_)
+importFrom(grDevices, rainbow, dev.new, colorRampPalette)
 importFrom(graphics, axis, barplot, dotchart, lines,
            matplot, mtext, pairs, par, plot, plot.default,
-           points)
+           points, rect)
 importFrom(stats, delete.response, mad, median, model.frame,
            model.response, na.fail, na.omit, napredict,
            predict, quantile, reformulate, terms, update,
-           var, weighted.mean)
-importFrom(doMC, registerDoMC)
+           var, weighted.mean, sd)
+importFrom(doParallel, registerDoParallel)
 importFrom(foreach, foreach, "%dopar%")
-importFrom(parallel, mclapply)
-
+importFrom(RColorBrewer, brewer.pal)
 
 export(combine, getTree, grow, importance, margin, MDSplot, na.roughfix,
        partialPlot, randomForest, rfImpute, treesize, tuneRF, varImpPlot, 

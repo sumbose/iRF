@@ -64,7 +64,7 @@ ytick = (x2_grid[-length(x2_grid)]+x2_grid[-1])/2
 if (plot.colorbar)
     color.bar(colorRampPalette(col.palette)(nbcol), min = range.color[1], max=range.color[2])
 
-persp3d(x=xtick
+rgl::persp3d(x=xtick
       , y=ytick
       , z
       , xlab=x1lab

@@ -1,7 +1,7 @@
 Package: iRF
 Title: iterative Random Forests
 Version: 2.0.0
-Date: 2017-06-15
+Date: 2017-07-25
 Depends:
     R (>= 3.1.2),
 Imports:
@@ -11,17 +11,17 @@ Imports:
     dplyr,
     Rcpp,
     methods,
-    doMC,
-    foreach
+    foreach,
+    doParallel,
+    RColorBrewer
 Suggests:
-    RColorBrewer,
     MASS,
     rgl
 LinkingTo:
     Rcpp
-Author: Sumanta Basu and Karl Kumbier (based on source codes from the R package 'FSInteract' by Hyun Jik Kim and  Rajen D. Shah, 'randomForest' by Andy Liaw and Matthew Wiener, and the original Fortran codes by Leo Breiman and Adele Cutler) 
-Description: iteratively grows weighted random forests (for binary classification and regression), finds high-order feature interactions in a stable fashion.
-Maintainer: Sumanta Basu <sumbose@cornell.edu>, Karl Kumbier <kkumbier@berkeley.edu>
-License: GPL-2
 SystemRequirements: C++11
-NeedsCompilation: yes
+Author: Sumanta Basu and Karl Kumbier (based on source codes from the R packages FSInteract by Hyun Jik Kim and Rajen D. Shah, randomForest by Andy Liaw and Matthew Wiener, and the original Fortran codes by Leo Breiman and Adele Cutler) 
+Description: Iteratively grows feature weighted random forests and finds high-order feature interactions in a stable fashion.
+Maintainer: Karl Kumbier <kkumbier@berkeley.edu>
+URL: https://arxiv.org/abs/1706.08457
+License: GPL-2

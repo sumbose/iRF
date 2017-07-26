@@ -6,7 +6,7 @@
   of partial dependence function. Uses R package \code{rgl}
 }
 \usage{
-  partialDep2var(x1, x2, y, gridlength=NULL, x1_grid=NULL, x2_grid=NULL,
+  partialPlot2var(x1, x2, y, gridlength=NULL, x1_grid=NULL, x2_grid=NULL,
 x1lab='v1', x2lab='v2', ylab=NA, range.color=NULL, col.palette=c('blue',
 'yellow'), plot_quantile_scale = TRUE, plot.colorbar=TRUE, ...)
 }
@@ -14,7 +14,7 @@ x1lab='v1', x2lab='v2', ylab=NA, range.color=NULL, col.palette=c('blue',
   \item{x1, x2, y}{numeric vectors containing the first, second and the response variable}
   \item{gridlength}{If either x1_grid or x2_grid is missin, a scalar
     indicating length of grids against which to make the plot}
-  \item{x1_grid, x2_gris}{grids of points between which the surface map will be constant}
+  \item{x1_grid, x2_grid}{grids of points between which the surface map will be constant}
   \item{x1lab, x2lab, ylab}{Labels of x, y and z-axis respectively}
   \item{range.color}{range of values which should be colored. input in
     the form (min, max). If not provided, the program automatically
@@ -25,19 +25,12 @@ x1lab='v1', x2lab='v2', ylab=NA, range.color=NULL, col.palette=c('blue',
   \item{plot_quantile_scale}{If TRUE, plots against quantiles of x1 and
     x2 instead of their raw values}
   \item{plot.colorbar}{produce a separate colorbar for the partial dependence plot?}
+  \item{...}{additional arguments to pass to rgl::persp3d}
 }
 \value{ 
 A RGL plot of type persp3d() of the package \code{rgl}
 }
-%\details{
-%}
-%\references{
-%}
 \seealso{
-  \code{\link{rgl::persp3d}}
-}
-\examples{
-
+  \code{\link[rgl]{persp3d}}
 }
 \author{Sumanta Basu \email{sumbose@berkeley.edu}}
-%\keyword{favourite keyword}

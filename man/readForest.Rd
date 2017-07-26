@@ -6,14 +6,12 @@
   Passes a feature matrix (and optionally a label vector) through a fitted random forest
   object, records size (and Gini impurity) of each node. Optionally,
   for every node, returns the features used to define the rule and the data
-  points falling in that node. Uses \code{foreach} function to
+  points falling in that node. Uses \code{mclapply} function to
   distribute computation across available cores.
 }
 \usage{
-  function(rfobj, x, 
-           return.node.feature=TRUE, 
-           wt.pred.accuracy=FALSE,
-           n.core=1)
+  readForest(rfobj, x, y=NULL, return.node.feature=TRUE, 
+    wt.pred.accuracy=FALSE, n.core=1)
 }
 \arguments{
   \item{rfobj}{a fitted \code{randomForest} object with the
@@ -25,6 +23,7 @@
     used to define the decision rule associated with a node}
   \item{wt.pred.accuracy}{Should leaf nodes be sampled proportional to both
     size and decrease in variabiliy of responses?}
+  \item{n.core}{number of cores across which tree reading will be distributed}
 }
 \value{ A list containing the following items:
   \item{tree.info}{a data frame with number of rows equal to total number of
@@ -47,11 +46,7 @@
 }
 
 \examples{
-  library(doMC)
-  registerDoMC()
-  options(cores = 7)
-
-  n = 200; p = 250
+  n = 50; p = 10
   X = array(rnorm(n*p), c(n, p))
   Y = (X[,1]>0.35 & X[,2]>0.35)|(X[,5]>0.35 & X[,7]>0.35)
   Y = as.factor(as.numeric(Y>0))
@@ -59,26 +54,16 @@
   train.id = 1:(n/2)
   test.id = setdiff(1:n, train.id)
   
-  rf <- randomForest(x=X[train.id,], y=Y[train.id], xtest=X[test.id,],
-                     ytest=Y[test.id], keep.forest=TRUE)
-
-  rforest <- readForest(rfobj=rf, x=X[train.id,], y=as.numeric(Y[train.id])-1)
-
+  rf <- randomForest(x=X, y=Y, keep.forest=TRUE, track.nodes=TRUE,
+    ntree=100)
+  rforest <- readForest(rfobj=rf, x=X, n.core=2)
   head(rforest$tree_info)
 
-  # only consider leaf nodes
-  rforest <- readForest(rfobj=rf, x=X[train.id,], y = as.numeric(Y[train.id])-1)
-
-  # count number of leaf nodes with at least 5 observations
-  sum(rforest$tree.info$size.node > 5)
-
-  # pass test data through the forest
-  rforest <- readForest(rfobj=rf, X[test.id,], y=as.numeric(Y[test.id])-1)
-
-  # count number of leaf nodes with at least 5 observations
+ # count number of leaf nodes with at least 5 observations
   sum(rforest$tree.info$size.node > 5)
 
 }
 
-\author{Sumanta Basu \email{sumbose@berkeley.edu}}
+\author{Sumanta Basu \email{sumbose@berkeley.edu}, Karl Kumbier
+  \email{kkumbier@berkeley.edu}}
 
