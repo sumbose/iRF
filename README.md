@@ -24,8 +24,8 @@ For a detailed description on the usage of `iRF`, see the
 [vignette](https://cdn.rawgit.com/sumbose/iRF/master/vignettes/vignette2.html). 
 
 ### System requirements
-This package requires C++11. OSX users may need to install gfortran to compile,
-which can be done with the following commands:
+This package requires C++11 and  R (>= 3.1.2). OSX users may need to install gfortran 
+to compile, which can be done with the following commands:
 
 ```r
 curl -O http://r.research.att.com/libs/gfortran-4.8.2-darwin13.tar.bz2
