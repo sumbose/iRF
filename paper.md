@@ -44,7 +44,7 @@ fitted random forest, identifying interactions that drive predictive accuracy
 remains a challenge. This challenge is in large part due to the enourmous number
 of interactions that must be considered (i.e. there are $O(p^s)$ possible
 interactions of size $s$ among $p$ features) and the instability of random
-forest decision paths \*.
+forest decision paths.
 
 The iterative Random Forest algorithm (iRF), and corresponding `iRF` R package,
 take a step towards addressing these issues with a computationally tractable
