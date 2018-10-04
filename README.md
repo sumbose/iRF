@@ -1,11 +1,12 @@
 ## iterative Random Forests (iRF)
 
 The R package `iRF` implements iterative Random Forests, a method for
-iteratively growing ensemble of weighted decision trees, and detecting
+iteratively growing an ensemble of weighted decision trees, and detecting
 high-order feature interactions by analyzing feature usage on decision paths.
-This version uses source codes from the R package `randomForest` by Andy Liaw
-and Matthew Weiner and the original Fortran codes by Leo Breiman and Adele
-Cutler.
+This package uses source codes from the R packages `FSInteract` by Hyun Jik Kim
+and Rajen D. Shah, `randomForest` by Andy Liaw and Matthew Wiener, and the
+original Random Forest Fortran codes by Leo Breiman and Adele Cutler. It was
+built and tsted in OSX and linux.
 
 To download and install the package, use `devtools`
 
@@ -31,12 +32,3 @@ to compile, which can be done with the following commands:
 curl -O http://r.research.att.com/libs/gfortran-4.8.2-darwin13.tar.bz2
 sudo tar fvxz gfortran-4.8.2-darwin13.tar.bz2 -C /
 ```
-
-### Binaries
-Pre-compiled binaries are available for OSX and linux in the `binaries`
-directory and can be installed using the command:
-
-```r
-R CMD INSTALL <filename>
-```
-
