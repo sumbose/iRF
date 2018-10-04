@@ -6,9 +6,9 @@ tags:
   - Interpretable machine learning
 authors:
   - name: Sumanta Basu
-    affiliation: "&#8727;, 1, 2"
+    affiliation: "\*, 1, 2"
   - name: Karl Kumbier
-    affiliation: "&#8727;, 3"
+    affiliation: "\*, 3"
   - name: James B. Brown
     affiliation: "3, 4, 5"
   - name: Bin Yu
@@ -29,7 +29,7 @@ affiliations:
    of California, Berkeley 
    index: 6
  - name: Denotes equal contribution
-   index: &#8727;
+   index: \*;
 date: 2 October 2018
 bibliography: paper.bib
 ---
@@ -44,7 +44,7 @@ fitted random forest, identifying interactions that drive predictive accuracy
 remains a challenge. This challenge is in large part due to the enourmous number
 of interactions that must be considered (i.e. there are $O(p^s)$ possible
 interactions of size $s$ among $p$ features) and the instability of random
-forest decision paths &#8727.
+forest decision paths \*.
 
 The iterative Random Forest algorithm (iRF), and corresponding `iRF` R package,
 take a step towards addressing these issues with a computationally tractable
