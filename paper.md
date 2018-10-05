@@ -22,11 +22,9 @@ affiliations:
    index: 3
  - name: Centre for Computational Biology, School of Biosciences, University of Birmingham
    index: 4
- - name: Molecular Ecosystems Biology Department, Biosciences Area, Lawrence
-   Berkeley National Laboratory 
+ - name: Molecular Ecosystems Biology Department, Biosciences Area, Lawrence Berkeley National Laboratory 
    index: 5
- - name: Department of Electrical Engineering and Computer Sciences, University
-   of California, Berkeley 
+ - name: Department of Electrical Engineering and Computer Sciences, University of California, Berkeley 
    index: 6
  - name: Denotes equal contribution
    index: \*;
