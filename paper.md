@@ -14,8 +14,8 @@ authors:
   - name: Bin Yu
     affiliation: "c, f"
 affiliations:
-  - name: Denotes equal contribution
-   index: 1;
+ - name: Denotes equal contribution
+   index: 1
  - name: Department of Biological Statistics and Computational Biology, Cornell University
    index: a
  - name: Department of Statistical Science, Cornell University
