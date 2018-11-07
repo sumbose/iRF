@@ -34,5 +34,11 @@
 \seealso{
   \code{\link{randomForest}}
 }
+\examples{
+set.seed(1)
+data(iris)
+iris.rf <- randomForest(Species ~ ., iris, keep.forest=FALSE)
+plot(margin(iris.rf))
+}
 \author{Robert Gentlemen, with slight modifications by Andy Liaw}
 \keyword{classif}

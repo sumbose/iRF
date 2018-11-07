@@ -47,10 +47,12 @@
   \code{\link{randomForest}}, \code{\link{varImpPlot}}
 }
 \examples{
-data(iris)
 set.seed(4543)
-iris.rf <- randomForest(Species ~ ., data=iris, importance=TRUE)
-importance(iris.rf)
+data(mtcars)
+mtcars.rf <- randomForest(mpg ~ ., data=mtcars, ntree=1000,
+                          keep.forest=FALSE, importance=TRUE)
+importance(mtcars.rf)
+importance(mtcars.rf, type=1)
 }
 %\author{}
 \keyword{regression}
