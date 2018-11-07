@@ -30,8 +30,8 @@
   \code{\link{randomForest}}
 }
 \examples{
-data(iris)
-plot(randomForest(Species ~ ., iris, keep.forest=FALSE, ntree=100))
+data(mtcars)
+plot(randomForest(mpg ~ ., mtcars, keep.forest=FALSE, ntree=100), log="y")
 }
 \author{Andy Liaw}
 \keyword{classif}

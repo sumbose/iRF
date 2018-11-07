@@ -8,8 +8,3 @@ RIT_1class <- function(z, weights, L, branch, depth, n_trees, min_inter_sz, n_co
 RIT_2class <- function(z, z0, L, branch, depth, n_trees, theta0, theta1, min_inter_sz, n_cores, is_sparse) {
     .Call('iRF_RIT_2class', PACKAGE = 'iRF', z, z0, L, branch, depth, n_trees, theta0, theta1, min_inter_sz, n_cores, is_sparse)
 }
-
-nodeVars <- function(varnodes, nrnodes, p, parents, idcskeep, nodect, rowoffset, nodevars) {
-    .Call('iRF_nodeVars', PACKAGE = 'iRF', varnodes, nrnodes, p, parents, idcskeep, nodect, rowoffset, nodevars)
-}
-

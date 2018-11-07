@@ -6,28 +6,30 @@ tags:
   - Interpretable machine learning
 authors:
   - name: Sumanta Basu
-    affiliation: "1, a, b"
+    affiliation: "&#8727;, 1, 2"
   - name: Karl Kumbier
-    affiliation: "1, c"
+    affiliation: "&#8727;, 3"
   - name: James B. Brown
-    affiliation: "c, d, e"
+    affiliation: "3, 4, 5"
   - name: Bin Yu
-    affiliation: "c, f"
+    affiliation: "3, 6"
 affiliations:
- - name: Denotes equal contribution
-   index: 1
  - name: Department of Biological Statistics and Computational Biology, Cornell University
-   index: a
+   index: 1
  - name: Department of Statistical Science, Cornell University
-   index: b
+   index: 2
  - name: Statistics Department, University of California, Berkeley
-   index: c
+   index: 3
  - name: Centre for Computational Biology, School of Biosciences, University of Birmingham
-   index: d
- - name: Molecular Ecosystems Biology Department, Biosciences Area, Lawrence Berkeley National Laboratory 
-   index: e
- - name: Department of Electrical Engineering and Computer Sciences, University of California, Berkeley 
-   index: f
+   index: 4
+ - name: Molecular Ecosystems Biology Department, Biosciences Area, Lawrence
+   Berkeley National Laboratory 
+   index: 5
+ - name: Department of Electrical Engineering and Computer Sciences, University
+   of California, Berkeley 
+   index: 6
+ - name: Denotes equal contribution
+   index: &#8727;
 date: 2 October 2018
 bibliography: paper.bib
 ---
@@ -39,13 +41,13 @@ of problems. The predictive accuracy of random forests stems from their ability
 to learn high-order, non-linear interactions in large datasets. Although
 approaches exist for evaluating the importance of individual features in a
 fitted random forest, identifying interactions that drive predictive accuracy
-remains a challenge. This is in large part due to the enourmous number
+remains a challenge. This challenge is in large part due to the enourmous number
 of interactions that must be considered (i.e. there are $O(p^s)$ possible
 interactions of size $s$ among $p$ features) and the instability of random
 forest decision paths.
 
 The iterative Random Forest algorithm (iRF), and corresponding `iRF` R package,
-take a step towards addressing these challenges with a computationally tractable
+take a step towards addressing these issues with a computationally tractable
 approach to search for important interactions in a fitted random forest
 [@basu2018iterative]. Our algorithm grows a series of feature weighted random
 forests [@amaratunga2008enriched] to perform soft regularization on the model

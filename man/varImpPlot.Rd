@@ -29,11 +29,12 @@ varImpPlot(x, sort=TRUE, n.var=min(30, nrow(x$importance)),
 }
 \examples{
 set.seed(4543)
-data(iris)
-iris.rf <- randomForest(Species ~ ., data=iris, importance=TRUE)
-varImpPlot(iris.rf)
+data(mtcars)
+mtcars.rf <- randomForest(mpg ~ ., data=mtcars, ntree=1000, keep.forest=FALSE,
+                          importance=TRUE)
+varImpPlot(mtcars.rf)
 }
-\author{Andy Liaw}
+\author{Andy Liaw \email{andy\_liaw@merck.com}}
 \keyword{regression}
 \keyword{classif}
 \keyword{tree}

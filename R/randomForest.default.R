@@ -308,6 +308,7 @@ mylevels <- function(x) if (is.factor(x)) levels(x) else 0
                   errts = error.test,
                   inbag = if (keep.inbag)
                     matrix(integer(n * ntree), n) else integer(n),
+                  DUP=FALSE,
                   PACKAGE="iRF"
       )[-1]  
       if (keep.forest) {
@@ -469,6 +470,7 @@ mylevels <- function(x) if (is.factor(x)) levels(x) else 0
                   oob.times = integer(n),
                   inbag = if (keep.inbag)
                     matrix(integer(n * ntree), n) else integer(1),
+                  DUP=FALSE,
                   PACKAGE="iRF")[-1]
       
       ## Format the forest component, if present.

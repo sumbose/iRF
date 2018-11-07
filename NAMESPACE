@@ -1,26 +1,29 @@
 useDynLib(iRF)
 importFrom(Rcpp, evalCpp)
-importFrom(Matrix, Matrix, t, sparseMatrix)
+importFrom(Matrix, Matrix, t, sparseMatrix, rowSums, colSums)
 importFrom(methods, is)
 importFrom(AUC, auc, roc)
 importFrom(data.table, data.table, rbindlist)
-importFrom(dplyr, select, select_)
-importFrom(grDevices, rainbow, dev.new, colorRampPalette)
+importFrom(dplyr, select, arrange, desc, "%>%", group_by, 
+           summarize, mutate, right_join)
+importFrom(stringr, str_replace_all, str_remove_all, str_split)
+importFrom(grDevices, rainbow)
 importFrom(graphics, axis, barplot, dotchart, lines,
            matplot, mtext, pairs, par, plot, plot.default,
-           points, rect)
+           points)
 importFrom(stats, delete.response, mad, median, model.frame,
            model.response, na.fail, na.omit, napredict,
            predict, quantile, reformulate, terms, update,
-           var, weighted.mean, sd)
-importFrom(doParallel, registerDoParallel)
+           var, weighted.mean)
+importFrom(doMC, registerDoMC)
+importFrom(doRNG, "%dorng%")
 importFrom(foreach, foreach, "%dopar%")
-importFrom(RColorBrewer, brewer.pal)
+importFrom(parallel, mclapply)
 
 export(combine, getTree, grow, importance, margin, MDSplot, na.roughfix,
-       partialPlot, randomForest, rfImpute, treesize, tuneRF, varImpPlot, 
+       randomForest, rfImpute, treesize, tuneRF, varImpPlot, 
        varUsed, rfNews, outlier, classCenter, rfcv, readForest, iRF, 
-       partialPlot2var, RIT)
+       RIT, subsetReadForest, interactPredict, gRIT, permPredict)
 
 
 S3method(print, randomForest)
@@ -28,7 +31,6 @@ S3method(predict, randomForest)
 S3method(plot, randomForest)
 S3method(plot, margin)
 S3method(margin, randomForest)
-S3method(partialPlot, randomForest)
 S3method(grow, randomForest)
 S3method(importance, randomForest)
 S3method(outlier, randomForest)

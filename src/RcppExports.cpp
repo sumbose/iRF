@@ -45,21 +45,3 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// nodeVars
-IntegerVector nodeVars(IntegerVector varnodes, int nrnodes, int p, IntegerVector parents, IntegerVector idcskeep, IntegerVector nodect, int rowoffset, IntegerVector nodevars);
-RcppExport SEXP iRF_nodeVars(SEXP varnodesSEXP, SEXP nrnodesSEXP, SEXP pSEXP, SEXP parentsSEXP, SEXP idcskeepSEXP, SEXP nodectSEXP, SEXP rowoffsetSEXP, SEXP nodevarsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< IntegerVector >::type varnodes(varnodesSEXP);
-    Rcpp::traits::input_parameter< int >::type nrnodes(nrnodesSEXP);
-    Rcpp::traits::input_parameter< int >::type p(pSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type parents(parentsSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type idcskeep(idcskeepSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type nodect(nodectSEXP);
-    Rcpp::traits::input_parameter< int >::type rowoffset(rowoffsetSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type nodevars(nodevarsSEXP);
-    rcpp_result_gen = Rcpp::wrap(nodeVars(varnodes, nrnodes, p, parents, idcskeep, nodect, rowoffset, nodevars));
-    return rcpp_result_gen;
-END_RCPP
-}
