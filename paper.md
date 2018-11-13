@@ -47,17 +47,17 @@ forest decision paths.
 The iterative Random Forest algorithm (iRF), and corresponding `iRF` R package,
 take a step towards addressing these issues with a computationally tractable
 approach to search for important interactions in a fitted random forest
-[@basu2018iterative]. Our algorithm grows a series of feature weighted random
-forests [@amaratunga2008enriched] to perform soft regularization on the model
-based on predictive features. We then search for prevalent interactions in the
-fitted random forest using a generalization of random intersection trees
-[@shah2014random].  Finally, we assess the stability of recovered interactions
-by repeating this search across random forests trained on bootstrap samples of
-the data. The `iRF` R package combines these steps into a single workflow. It is
-based on the source codes from the R packages `randomForest`
-[@liaw2002classification] and `FSInteract` [@shah2014random]. A detailed
-vignette is available on
-[github](https://cdn.rawgit.com/sumbose/iRF/master/vignettes/vignette2.html).
+[@basu2018iterative][@kumbier2018refining]. Our algorithm grows a series of
+feature weighted random forests [@amaratunga2008enriched] to perform soft
+regularization on the model based on predictive features. We then search for
+prevalent interactions in the fitted random forest using a generalization of
+random intersection trees [@shah2014random].  Finally, we assess the stability
+of recovered interactions by repeating this search across random forests trained
+on bootstrap samples of the data. The `iRF` R package combines these steps into
+a single workflow. It is based on the source codes from the R packages
+`randomForest` [@liaw2002classification] and `FSInteract` [@shah2014random]. A
+detailed vignette is available
+[here](https://www.stat.berkeley.edu/~kkumbier/vignette.html).
 
 # Acknowledgements
 This research was supported in part by grants NHGRI U01HG007031, ARO

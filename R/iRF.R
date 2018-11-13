@@ -23,7 +23,7 @@ iRF <- function(x, y,
     stop('selected iteration greater than n.iter')
   if (length(mtry.select.prob) != ncol(x))
     stop('length mtry.select.prop must equal number of features')
-  if (!is.null(xtest))
+  if (!is.null(xtest)) {
     if (ncol(xtest) != ncol(x)) 
       stop('training/test data must have same number of features')
   if (!is.null(xtest) & is.null(ytest))

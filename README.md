@@ -1,4 +1,4 @@
-## iterative Random Forests (iRF)
+# iterative Random Forests (iRF)
 
 The R package `iRF` implements iterative Random Forests, a method for
 iteratively growing ensemble of weighted decision trees, and detecting
@@ -7,7 +7,7 @@ This version uses source codes from the R package `randomForest` by Andy Liaw
 and Matthew Weiner and the original Fortran codes by Leo Breiman and Adele
 Cutler.
 
-# Installation
+## Installation
 To install `iRF` from CRAN:
 ```r
 install.packages('iRF')
@@ -29,3 +29,8 @@ This package requires gfortran to compile. OSX users may need to intall gfortran
 available [here](https://cran.r-project.org/bin/macosx/tools/). For details on
 usage, see our
 [vignette](https://www.stat.berkeley.edu/~kkumbier/vignette.html).
+
+## Contribute
+To contribute to this project, please review the
+[guidelines](https://github.com/sumbose/iRF/blob/master/CONTRIBUTING.md). This
+project is released with a [contributor code of conduct](https://github.com/sumbose/iRF/blob/master/CODE_OF_CONDUCT.md). By participating in this project you agree to abide by its terms.
