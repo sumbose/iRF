@@ -7,35 +7,22 @@ This version uses source codes from the R package `randomForest` by Andy Liaw
 and Matthew Weiner and the original Fortran codes by Leo Breiman and Adele
 Cutler.
 
-To download and install the package, use `devtools`
-
+# Installation
+To install `iRF` from CRAN:
 ```r
-library(devtools)
-devtools::install_github("sumbose/iRF")
+install.packages('iRF')
 ```
-Alternatively, the package can be installed by downloading this repository and
-using the command:
+
+To install the development version from GitHub:
 
 ```r
-R CMD INSTALL iRF2.0
+install.packages('devtools')
+devtools::install_github("sumbose/iRF")
 ```
 
 You can subsequently load the package with the usual R commands:
-
 ```r
 library(iRF)
 ```
 
-OSX users may need to intall gfortran to compile. This can be done with the
-following commands:
-
-```r
-curl -O http://r.research.att.com/libs/gfortran-4.8.2-darwin13.tar.bz2
-sudo tar fvxz gfortran-4.8.2-darwin13.tar.bz2 -C /
-```
-
-
-
-
-
-
+This package requires gfortran to compile. OSX users may need to intall gfortran available [here](https://cran.r-project.org/bin/macosx/tools/). 
