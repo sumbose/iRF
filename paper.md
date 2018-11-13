@@ -6,9 +6,9 @@ tags:
   - Interpretable machine learning
 authors:
   - name: Sumanta Basu
-    affiliation: a, 1, 2"
+    affiliation: "a, 1, 2"
   - name: Karl Kumbier
-    affiliation: a, 3"
+    affiliation: "a, 3"
   - name: James B. Brown
     affiliation: "3, 4, 5"
   - name: Bin Yu
