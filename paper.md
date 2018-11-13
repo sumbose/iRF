@@ -6,28 +6,28 @@ tags:
   - Interpretable machine learning
 authors:
   - name: Sumanta Basu
-    affiliation: "a, 1, 2"
+    affiliation: "1, a, b"
   - name: Karl Kumbier
-    affiliation: "a, 3"
+    affiliation: "1, c"
   - name: James B. Brown
-    affiliation: "3, 4, 5"
+    affiliation: "c, d, e"
   - name: Bin Yu
-    affiliation: "3, 6"
+    affiliation: "c, f"
 affiliations:
  - name: Department of Biological Statistics and Computational Biology, Cornell University
-   index: 1
+   index: a
  - name: Department of Statistical Science, Cornell University
-   index: 2
+   index: b
  - name: Statistics Department, University of California, Berkeley
-   index: 3
+   index: c
  - name: Centre for Computational Biology, School of Biosciences, University of Birmingham
-   index: 4
+   index: d
  - name: Molecular Ecosystems Biology Department, Biosciences Area, Lawrence Berkeley National Laboratory 
-   index: 5
+   index: e
  - name: Department of Electrical Engineering and Computer Sciences, University of California, Berkeley 
-   index: 6
+   index: f
  - name: Denotes equal contribution
-   index: "a";
+   index: 1
 date: 2 October 2018
 bibliography: paper.bib
 ---
