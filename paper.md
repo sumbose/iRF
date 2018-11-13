@@ -27,7 +27,7 @@ affiliations:
  - name: Department of Electrical Engineering and Computer Sciences, University of California, Berkeley 
    index: 6
  - name: Denotes equal contribution
-   index: a;
+   index: "a";
 date: 2 October 2018
 bibliography: paper.bib
 ---
