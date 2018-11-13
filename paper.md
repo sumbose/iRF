@@ -6,9 +6,9 @@ tags:
   - Interpretable machine learning
 authors:
   - name: Sumanta Basu
-    affiliation: "&#8727;, 1, 2"
+    affiliation: "a, 1, 2"
   - name: Karl Kumbier
-    affiliation: "&#8727;, 3"
+    affiliation: "a, 3"
   - name: James B. Brown
     affiliation: "3, 4, 5"
   - name: Bin Yu
@@ -29,7 +29,7 @@ affiliations:
    of California, Berkeley 
    index: 6
  - name: Denotes equal contribution
-   index: &#8727;
+   index: a;
 date: 2 October 2018
 bibliography: paper.bib
 ---
@@ -74,3 +74,5 @@ acknowledges support from the Miller Institute for her Miller Professorship in
 2016-2017. SB acknowledges the support of UC Berkeley and LBNL, where he
 conducted most of his work on this paper as a postdoc. We thank P. Bickel and S.
 Shrotriya for helpful discussions and comments.
+
+# References
