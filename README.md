@@ -25,4 +25,7 @@ You can subsequently load the package with the usual R commands:
 library(iRF)
 ```
 
-This package requires gfortran to compile. OSX users may need to intall gfortran available [here](https://cran.r-project.org/bin/macosx/tools/). 
+This package requires gfortran to compile. OSX users may need to intall gfortran
+available [here](https://cran.r-project.org/bin/macosx/tools/). For details on
+usage, see our
+[vignette](https://www.stat.berkeley.edu/~kkumbier/vignette.html).
