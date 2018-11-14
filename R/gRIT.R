@@ -15,7 +15,7 @@ gRIT <- function(x, y,
 
   out <- list()
   class.irf <- is.factor(y)
-  if (ncore == -1) n.core <- detectCores()  
+  if (n.core == -1) n.core <- detectCores()  
   registerDoMC(n.core)
 
   # Check rit parameters and set default values if not specified

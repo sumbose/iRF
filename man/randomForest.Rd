@@ -20,7 +20,6 @@
              max(floor(ncol(x)/3), 1) else floor(sqrt(ncol(x))),
              mtry.select.prob = rep(1/ncol(x), ncol(x)),
              keep.subset.var = NULL,
-             track.nodes=FALSE,
              replace=TRUE, classwt=NULL, cutoff, strata,
              sampsize = if (replace) nrow(x) else ceiling(.632*nrow(x)),
              nodesize = if (!is.null(y) && !is.factor(y)) 5 else 1,
@@ -29,7 +28,9 @@
              proximity, oob.prox=proximity,
              norm.votes=TRUE, do.trace=FALSE,
              keep.forest=!is.null(y) && is.null(xtest), corr.bias=FALSE,
-             keep.inbag=FALSE, ...)
+             keep.inbag=FALSE, 
+             track.nodes=FALSE,
+             ...)
 \method{print}{randomForest}(x, ...)
 }
 \arguments{

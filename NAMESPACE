@@ -17,7 +17,7 @@ importFrom(stats, delete.response, mad, median, model.frame,
            var, weighted.mean)
 importFrom(doMC, registerDoMC)
 importFrom(doRNG, "%dorng%")
-importFrom(foreach)
+importFrom(foreach, foreach)
 importFrom(parallel, detectCores)
 
 export(combine, getTree, grow, importance, margin, MDSplot, na.roughfix,

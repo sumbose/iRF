@@ -12,14 +12,14 @@
       n.iter=5, 
       ntree=500, 
       n.core=-1,
-      mtry.select.prob = rep(1/ncol(x), ncol(x)),
+      mtry.select.prob = rep(1, ncol(x)),
       interactions.return=NULL,
       rit.param=list(depth=5, ntree=500, 
                      nchild=2, class.id=1, 
                      min.nd=1, class.cut=NULL), 
-      varnames.grp=NULL,
+      varnames.grp=colnames(x),
       n.bootstrap=1,
-      select.iter=FALSE,
+      select.iter=TRUE,
       signed=TRUE,
       verbose=TRUE, ...
      )

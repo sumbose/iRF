@@ -55,7 +55,7 @@ iRF <- function(x, y,
   }
 
   # Set number of trees to grow in each core 
-  if (ncore == -1) n.core <- detectCores()
+  if (n.core == -1) n.core <- detectCores()
   a <- floor(ntree / n.core) 
   b <- ntree %% n.core
   ntree.id <- c(rep(a + 1, b), rep(a, n.core - b))

@@ -10,13 +10,13 @@
   available cores.
 }
 \usage{
-  function(rfobj, x, 
-           return.node.feature=TRUE,
-           return.node.obs=FALSE, 
-           varnames.group=NULL,
-           get.split=FALSE,
-           first.split=TRUE,
-           n.core=1)
+  readForest(rfobj, x, 
+             return.node.feature=TRUE,
+             return.node.obs=FALSE, 
+             varnames.grp=NULL,
+             get.split=FALSE,
+             first.split=TRUE,
+             n.core=-1)
 }
 \arguments{
   \item{rfobj}{a fitted \code{randomForest} object with the
@@ -76,20 +76,16 @@
   rf <- randomForest(x=X[train.id,], y=Y[train.id], xtest=X[test.id,],
                      ytest=Y[test.id], keep.forest=TRUE)
 
-  rforest <- readForest(rfobj=rf, x=X[train.id,], y=as.numeric(Y[train.id])-1)
-
-  head(rforest$tree_info)
-
-  # only consider leaf nodes
-  rforest <- readForest(rfobj=rf, x=X[train.id,], y = as.numeric(Y[train.id])-1)
+  rforest <- readForest(rfobj=rf, x=X[train.id,])
+  head(rforest$tree.info)
 
   # count number of leaf nodes with at least 5 observations
   sum(rforest$tree.info$size.node > 5)
 
   # pass test data through the forest
-  rforest <- readForest(rfobj=rf, X[test.id,], y=as.numeric(Y[test.id])-1)
+  rforest <- readForest(rfobj=rf, X[test.id,])
 
-  # count number of leaf nodes with at least 5 observations
+  # count number of leaf nodes with at least 5 test observations
   sum(rforest$tree.info$size.node > 5)
 
 }

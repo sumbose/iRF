@@ -308,7 +308,6 @@ mylevels <- function(x) if (is.factor(x)) levels(x) else 0
                   errts = error.test,
                   inbag = if (keep.inbag)
                     matrix(integer(n * ntree), n) else integer(n),
-                  DUP=FALSE,
                   PACKAGE="iRF"
       )[-1]  
       if (keep.forest) {
@@ -406,7 +405,8 @@ mylevels <- function(x) if (is.factor(x)) levels(x) else 0
                     proximity = if(proximity) matrix(rfout$proxts, nrow=ntest,
                                                      dimnames = list(xts.row.names, c(xts.row.names,
                                                                                       x.row.names))) else NULL),
-                  inbag = if (keep.inbag) rfout$inbag else NULL)
+                  inbag = if (keep.inbag) rfout$inbag else NULL,
+                  y = as.factor(y))
     }
     
     else {
@@ -470,7 +470,6 @@ mylevels <- function(x) if (is.factor(x)) levels(x) else 0
                   oob.times = integer(n),
                   inbag = if (keep.inbag)
                     matrix(integer(n * ntree), n) else integer(1),
-                  DUP=FALSE,
                   PACKAGE="iRF")[-1]
       
       ## Format the forest component, if present.
@@ -539,7 +538,8 @@ mylevels <- function(x) if (is.factor(x)) levels(x) else 0
                   } else NULL,
                   inbag = if (keep.inbag)
                     matrix(rfout$inbag, nrow(rfout$inbag),
-                           dimnames=list(x.row.names, NULL)) else NULL)
+                           dimnames=list(x.row.names, NULL)) else NULL,
+                  y=y)
     }
     class(out) <- "randomForest"
     return(out)

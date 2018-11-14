@@ -13,10 +13,9 @@
        rit.param=list(depth=5, ntree=500,
                       nchild=2, class.id=1,
                       min.nd=1, class.cut=NULL),
-       get.prevalence=FALSE,
        signed=TRUE,
        ints.full=NULL,
-       n.core=1)
+       n.core=-1)
 }
 \arguments{
   \item{x}{numeric matrix of predictors}

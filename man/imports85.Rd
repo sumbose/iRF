@@ -55,7 +55,6 @@ imp85 <- imp85[complete.cases(imp85), ]
 ## Drop empty levels for factors.
 imp85[] <- lapply(imp85, function(x) if (is.factor(x)) x[, drop=TRUE] else x)
 
-stopifnot(require(randomForest))
 price.rf <- randomForest(price ~ ., imp85, do.trace=10, ntree=100)
 print(price.rf)
 numDoors.rf <- randomForest(numOfDoors ~ ., imp85, do.trace=10, ntree=100)

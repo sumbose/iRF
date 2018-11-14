@@ -2,6 +2,7 @@ Package: iRF
 Title: iterative Random Forests
 Version: 3.0.0
 Date: 2018-11-14
+License: MIT | file LICENSE
 Depends:
     R (>= 3.1.2),
 Imports:
@@ -13,7 +14,9 @@ Imports:
     methods,
     doMC,
     doRNG,
-    FSInteract
+    FSInteract,
+    foreach,
+    stringr
 Suggests:
     RColorBrewer,
     MASS,

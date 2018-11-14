@@ -10,7 +10,7 @@ readForest <- function(rfobj, x,
     stop('No Forest component in the randomForest object')
   if (is.null(varnames.grp)) varnames.grp <- 1:ncol(x)
  
-  if (ncore == -1) n.core <- detectCores()
+  if (n.core == -1) n.core <- detectCores()
   registerDoMC(n.core)
   ntree <- rfobj$ntree
   n <- nrow(x)
