@@ -22,7 +22,7 @@ bug, create an associated issue and illustrate the bug with a minimal
 *  Look at the Travis and AppVeyor build status before and after making changes.
 The `README` should contain badges for any continuous integration services used
 by the package.  
-*  New code should follow Goole's R [style guide](https://google.github.io/styleguide/Rguide.xml).  
+*  New code should follow Google's R [style guide](https://google.github.io/styleguide/Rguide.xml).  
 *  We use [testthat](https://cran.r-project.org/package=testthat). Contributions
 with test cases included are easier to accept.  
 *  For user-facing changes, add a bullet to the top of `NEWS.md` below the
