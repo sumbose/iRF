@@ -11,7 +11,7 @@
   iRF(x, y, xtest=NULL, ytest=NULL, 
       n.iter=5, 
       ntree=500, 
-      n.core=1,
+      n.core=-1,
       mtry.select.prob = rep(1/ncol(x), ncol(x)),
       interactions.return=NULL,
       rit.param=list(depth=5, ntree=500, 
@@ -30,7 +30,7 @@
   \item{n.iter}{number of weighted random forest fits}
   \item{ntree}{number of trees to grow in each iteration}
   \item{n.core}{number of cores across which tree growing should be
-    distributed}
+    distributed. If -1, all available cores will be used.}
   \item{mtry.select.prob}{initial weights specified for first random
     forest fit, defaults to equal weights}
   \item{interactions.return}{a numeric vector specifying which iterations to 

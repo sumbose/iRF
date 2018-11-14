@@ -33,7 +33,8 @@
     threshold associated with a feature split}
   \item{first.split}{if TRUE, only the threshold associated with the first time
     a feature is selected will be recorded}
-  \item{n.core}{the number of cores to parallelize over}
+  \item{n.core}{the number of cores to parallelize over. If -1, all available
+    cores will be used.}
 }
 \value{ A list containing the following items:
   \item{tree.info}{a data frame with number of rows equal to total number of

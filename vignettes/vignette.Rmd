@@ -129,7 +129,7 @@ the `doMC` library:
 # set up cores for parallel implementation
 library(doMC)
 registerDoMC()
-n.cores <- 4
+n.cores <- detectCores()
 options(cores=n.cores)
 n.tree.per.core <- 30
 

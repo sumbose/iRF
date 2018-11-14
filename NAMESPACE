@@ -17,13 +17,13 @@ importFrom(stats, delete.response, mad, median, model.frame,
            var, weighted.mean)
 importFrom(doMC, registerDoMC)
 importFrom(doRNG, "%dorng%")
-importFrom(foreach, foreach, "%dopar%")
-importFrom(parallel, mclapply)
+importFrom(foreach)
+importFrom(parallel, detectCores)
 
 export(combine, getTree, grow, importance, margin, MDSplot, na.roughfix,
        randomForest, rfImpute, treesize, tuneRF, varImpPlot, 
        varUsed, rfNews, outlier, classCenter, rfcv, readForest, iRF, 
-       RIT, subsetReadForest, interactPredict, gRIT)
+       RIT, subsetReadForest, gRIT)
 
 
 S3method(print, randomForest)

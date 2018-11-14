@@ -3,7 +3,7 @@ iRF <- function(x, y,
                 xtest=NULL, ytest=NULL, 
                 n.iter=5, 
                 ntree=500, 
-                n.core=1, 
+                n.core=-1, 
                 mtry.select.prob=rep(1, ncol(x)),
                 interactions.return=NULL, 
                 rit.param=list(depth=5, ntree=500, 
@@ -54,11 +54,12 @@ iRF <- function(x, y,
     importance.score <- list()
   }
 
-  # Set number of trees to grow in each core
+  # Set number of trees to grow in each core 
+  if (ncore == -1) n.core <- detectCores()
   a <- floor(ntree / n.core) 
   b <- ntree %% n.core
   ntree.id <- c(rep(a + 1, b), rep(a, n.core - b))
-  
+
   registerDoMC(n.core)
   for (iter in 1:n.iter) {
     
