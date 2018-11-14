@@ -27,7 +27,6 @@ extern void regRF(void *, void *, void *, void *, void *, void *, void *, void *
     void *, void *, void *, void *, void *, void *, void *, void *);
 
 /* .Call calls */
-extern SEXP iRF_nodeVars(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP iRF_RIT_1class(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP iRF_RIT_2class(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 
@@ -40,7 +39,6 @@ static const R_CMethodDef CEntries[] = {
 };
 
 static const R_CallMethodDef CallEntries[] = {
-  {"iRF_nodeVars",   (DL_FUNC) &iRF_nodeVars,    8},
   {"iRF_RIT_1class", (DL_FUNC) &iRF_RIT_1class,  9},
   {"iRF_RIT_2class", (DL_FUNC) &iRF_RIT_2class, 11},
   {NULL, NULL, 0}

@@ -54,7 +54,6 @@ precision <- function(read.forest, y, weights) {
 subsetTest <- function(int, ints, importance) {
   # Compare prevalence of interaction on decision paths to expectation under
   # independent selection
-  require(stringr)
 
   if (length(int) == 1) return(c(prev.test=0, prec.test=0))
   ss <- combn(int, length(int) - 1, simplify=FALSE)

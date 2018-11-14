@@ -248,7 +248,9 @@ interaction that is defined by high levels of $1, 2,$ and $3$.
 head(fit$interaction)
 ```
 
-(3) `importance`: a data table in. The `prev0` entry indicates interaction prevalence for class-$0$ leaf nodes and the `prev1` entry indicates interaction prevalence for class-$1$ leaf nodes. `sta.prev` indicates the proportion of times (across `n.bootsrap` samples) an interaction is more prevalent than expected under independent feature selection. `diff` indicates the difference in prevalence between class-$0$ and class-$1$ leaf nodes. `sta.diff` indicates the proportion of times (across `n.bootsrap` samples) an interaction is more prevalent among class-$1$ leaf nodes. `prec` describes the precision of leaf nodes for which an interaction is active. `sta.prec` indicates the proportion of times (across `n.bootsrap` samples) that an interaction is more precise than any subset. For a more detailed description of these importance metrics, see our paper: https://arxiv.org/abs/1810.07287.
+(3) `importance`: a data table of importance metrics associated with each interaction. The `prev0` entry indicates interaction prevalence for class-$0$ leaf nodes and the `prev1` entry indicates interaction prevalence for class-$1$ leaf nodes. `sta.prev` indicates the proportion of times (across `n.bootsrap` samples) an interaction is more prevalent than expected under independent feature selection. `diff` indicates the difference in prevalence between class-$0$ and class-$1$ leaf nodes. `sta.diff` indicates the proportion of times (across `n.bootsrap` samples) an interaction is more prevalent among class-$1$ leaf nodes. `prec` describes the precision of leaf nodes for which an interaction is active. `sta.prec` indicates the proportion of times (across `n.bootsrap` samples) that an interaction is more precise than any subset. For a more detailed description of these importance metrics, see our paper: https://arxiv.org/abs/1810.07287.
+
+(4) `iter.select`: The selected iteration.
 
 ```{r prevalence, message=FALSE}
 library(dplyr)

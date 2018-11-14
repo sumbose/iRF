@@ -112,6 +112,7 @@ gRIT <- function(x, y,
     out$imp <- out$imp %>%
       mutate(int=nameInts(ints.sub, varnames.unq, signed=signed)) %>%
       right_join(imp.test, by='int')
+    out$int <- out$int[out$int %in% out$imp$int]
   }
   return(out)
 }

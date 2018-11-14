@@ -23,7 +23,7 @@ importFrom(parallel, mclapply)
 export(combine, getTree, grow, importance, margin, MDSplot, na.roughfix,
        randomForest, rfImpute, treesize, tuneRF, varImpPlot, 
        varUsed, rfNews, outlier, classCenter, rfcv, readForest, iRF, 
-       RIT, subsetReadForest, interactPredict, gRIT, permPredict)
+       RIT, subsetReadForest, interactPredict, gRIT)
 
 
 S3method(print, randomForest)

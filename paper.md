@@ -1,5 +1,5 @@
 ---
-title: 'iRF: Extracting interactions from random forests'
+title: 'iRF: extracting interactions from random forests'
 tags:
   - R
   - Random Forests
@@ -14,6 +14,8 @@ authors:
   - name: Bin Yu
     affiliation: "c, f"
 affiliations:
+ - name: Denotes equal contribution
+   index: 1
  - name: Department of Biological Statistics and Computational Biology, Cornell University
    index: a
  - name: Department of Statistical Science, Cornell University
@@ -26,8 +28,6 @@ affiliations:
    index: e
  - name: Department of Electrical Engineering and Computer Sciences, University of California, Berkeley 
    index: f
- - name: Denotes equal contribution
-   index: 1
 date: 2 October 2018
 bibliography: paper.bib
 ---
@@ -47,7 +47,7 @@ forest decision paths.
 The iterative Random Forest algorithm (iRF), and corresponding `iRF` R package,
 take a step towards addressing these issues with a computationally tractable
 approach to search for important interactions in a fitted random forest
-[@basu2018iterative][@kumbier2018refining]. Our algorithm grows a series of
+[@basu2018iterative,@kumbier2018refining]. Our algorithm grows a series of
 feature weighted random forests [@amaratunga2008enriched] to perform soft
 regularization on the model based on predictive features. We then search for
 prevalent interactions in the fitted random forest using a generalization of
