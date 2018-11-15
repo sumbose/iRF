@@ -15,7 +15,7 @@ importFrom(stats, delete.response, mad, median, model.frame,
            model.response, na.fail, na.omit, napredict,
            predict, quantile, reformulate, terms, update,
            var, weighted.mean)
-importFrom(doMC, registerDoMC)
+importFrom(doParallel, registerDoParallel)
 importFrom(doRNG, "%dorng%")
 importFrom(foreach, foreach)
 importFrom(parallel, detectCores)

@@ -60,7 +60,7 @@ iRF <- function(x, y,
   b <- ntree %% n.core
   ntree.id <- c(rep(a + 1, b), rep(a, n.core - b))
 
-  registerDoMC(n.core)
+  registerDoParallel(n.core)
   for (iter in 1:n.iter) {
     
     # Grow Random Forest on full data

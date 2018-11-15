@@ -16,7 +16,7 @@
              varnames.grp=NULL,
              get.split=FALSE,
              first.split=TRUE,
-             n.core=-1)
+             n.core=1)
 }
 \arguments{
   \item{rfobj}{a fitted \code{randomForest} object with the
@@ -61,10 +61,6 @@
 }
 
 \examples{
-  library(doMC)
-  registerDoMC()
-  options(cores = 7)
-
   n = 200; p = 250
   X = array(rnorm(n*p), c(n, p))
   Y = (X[,1]>0.35 & X[,2]>0.35)|(X[,5]>0.35 & X[,7]>0.35)

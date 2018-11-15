@@ -15,7 +15,7 @@
                       min.nd=1, class.cut=NULL),
        signed=TRUE,
        ints.full=NULL,
-       n.core=-1)
+       n.core=1)
 }
 \arguments{
   \item{x}{numeric matrix of predictors}

@@ -16,7 +16,7 @@ gRIT <- function(x, y,
   out <- list()
   class.irf <- is.factor(y)
   if (n.core == -1) n.core <- detectCores()  
-  registerDoMC(n.core)
+  registerDoParallel(n.core)
 
   # Check rit parameters and set default values if not specified
   if (is.null(rand.forest) & is.null(read.forest))

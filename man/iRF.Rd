@@ -11,7 +11,7 @@
   iRF(x, y, xtest=NULL, ytest=NULL, 
       n.iter=5, 
       ntree=500, 
-      n.core=-1,
+      n.core=1,
       mtry.select.prob = rep(1, ncol(x)),
       interactions.return=NULL,
       rit.param=list(depth=5, ntree=500, 

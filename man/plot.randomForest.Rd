@@ -29,10 +29,6 @@
 \seealso{
   \code{\link{randomForest}}
 }
-\examples{
-data(mtcars)
-plot(randomForest(mpg ~ ., mtcars, keep.forest=FALSE, ntree=100), log="y")
-}
 \author{Andy Liaw}
 \keyword{classif}
 \keyword{regression}
