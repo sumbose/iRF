@@ -22,8 +22,6 @@ void simpleLinReg(int nsample, double *x, double *y, double *coef,
 void regRF(double *x, double *y, int *xdim, int *sampsize,
     int *nthsize, int *nrnodes, int *nTree, int *mtry, 
     double *selprob,
-    int *obsnodes,
-    int *tracknodes,
     int *subsetVar,
     int *subsetVarCard,
     int *imp,
@@ -68,7 +66,6 @@ squared errors when the mth variable is randomly permuted.
 
   int subsetCard;
   int *inbagidcs;
-  int *featuremat, *obsmat;
 
   nsample = xdim[0];
   mdim = xdim[1];
@@ -91,8 +88,6 @@ squared errors when the mth variable is randomly permuted.
   in        = (int *) S_alloc(nsample, sizeof(int));
   nodex      = (int *) S_alloc(nsample, sizeof(int));
   varUsed    = (int *) S_alloc(mdim, sizeof(int));
-  featuremat =    (int *) S_alloc(mdim * *nrnodes, sizeof(int));
-  obsmat =        (int *) S_alloc(nsample * *nrnodes, sizeof(int));
   inbagidcs = (int *) S_alloc(nsample, sizeof(int));
   nind = *replace ? NULL : (int *) S_alloc(nsample, sizeof(int));
 
@@ -195,8 +190,6 @@ squared errors when the mth variable is randomly permuted.
         upper + idx, avnode + idx, nodestatus + idx, *nrnodes,
         treeSize + j, *nthsize, *mtry, 
         selprob,
-        featuremat,
-        obsmat,
         inbagidcs,
         subsetVar, subsetCard,
         mbest + idx, cat, tgini,
@@ -208,13 +201,6 @@ squared errors when the mth variable is randomly permuted.
         rDaughter + idx, nodestatus + idx, ytr, upper + idx,
         avnode + idx, mbest + idx, treeSize[j], cat, *maxcat,
         nodex);
-
-    /* track which leaf node each observation falls into */
-    if (*tracknodes == 1) {
-      for (int n = 0; n < nsample; n++) {
-        obsnodes[n + j * nsample] = nodex[n];
-      }
-    }
 
     /* yptr is the aggregated prediction by all trees grown so far */
     errb = 0.0;

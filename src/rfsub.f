@@ -24,8 +24,8 @@ c     SUBROUTINE BUILDTREE
 
       subroutine buildtree(a, b, cl, cat, maxcat, mdim, nsample,
      1     nclass, treemap, bestvar, bestsplit, bestsplitnext, tgini,
-     1     nodestatus,nodepop, nodestart, classpop, tclasspop,
-     1     tclasscat,ta,nrnodes, idmove, ndsize, ncase, mtry,
+     1     nodestatus, nodepop, nodestart, classpop, tclasspop,
+     1     tclasscat, ta, nrnodes, idmove, ndsize, ncase, mtry,
      1     selprob, subsetvar, mcard,
      1     iv,
      1     nodeclass, ndbigtree, win, wr, wl, mred, nuse, mind,

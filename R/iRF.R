@@ -3,7 +3,7 @@ iRF <- function(x, y,
                 xtest=NULL, ytest=NULL, 
                 n.iter=5, 
                 ntree=500, 
-                n.core=-1, 
+                n.core=1, 
                 mtry.select.prob=rep(1, ncol(x)),
                 interactions.return=NULL, 
                 rit.param=list(depth=5, ntree=500, 
@@ -59,8 +59,8 @@ iRF <- function(x, y,
   a <- floor(ntree / n.core) 
   b <- ntree %% n.core
   ntree.id <- c(rep(a + 1, b), rep(a, n.core - b))
-
-  registerDoParallel(n.core)
+  if (n.core > 1) registerDoParallel(n.core)
+  
   for (iter in 1:n.iter) {
     
     # Grow Random Forest on full data

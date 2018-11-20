@@ -47,8 +47,6 @@ void regTree(double *x, double *y, int mdim, int nsample,
              int *nodestatus, int nrnodes, int *treeSize, int nthsize, 
              int mtry, 
              double *selprob,
-             int *featuremat,
-             int *obsmat,
              int *inbagidcs,
              int *subsetvar, int mcard,
              int *mbest, int *cat, double *tgini, int *varUsed);

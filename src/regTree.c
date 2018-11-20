@@ -30,8 +30,6 @@ void regTree(double *x, double *y, int mdim, int nsample, int *lDaughter,
              double *upper, double *avnode, int *nodestatus, int nrnodes,
              int *treeSize, int nthsize, int mtry, 
              double *selprob,
-             int *featuremat,
-             int *obsmat,
              int *inbagidcs,
              int *subsetvar, int mcard,
              int *mbest, int *cat,
@@ -49,8 +47,6 @@ void regTree(double *x, double *y, int mdim, int nsample, int *lDaughter,
     zeroInt(nodestart, nrnodes);
     zeroInt(nodepop, nrnodes);
     zeroDouble(avnode, nrnodes);
-    zeroInt(obsmat, nrnodes * nsample);
-    zeroInt(featuremat, nrnodes * mdim);
 
     jdex = (int *) Calloc(nsample, int);
     for (i = 1; i <= nsample; ++i) jdex[i-1] = i;
@@ -122,28 +118,10 @@ void regTree(double *x, double *y, int mdim, int nsample, int *lDaughter,
 		nodestart[ncur + 2] = ndendl + 1;
 		
 
-    /* update feature for children to reflect selected variable */
-    if (ncur == 0) {
-      featuremat[msplit - 1 +  (ncur + 1) * mdim] = 1;
-      featuremat[msplit - 1 + (ncur + 2) * mdim] = 1;
-    }
-    else {
-      /* update featuremat for all ancestor variables */
-      for (int ii = 0; ii < mdim; ++ii) {
-        featuremat[ii +  (ncur + 1) * mdim] = featuremat[ii +  k * mdim];
-        featuremat[ii +  (ncur + 2) * mdim] = featuremat[ii +  k * mdim];
-      }
-      /* update featuremat for selected variable */
-      featuremat[msplit - 1 +  (ncur + 1) * mdim] = featuremat[msplit - 1 +  k * mdim] + 1;
-      featuremat[msplit - 1 +  (ncur + 2) * mdim] = featuremat[msplit - 1 +  k * mdim] + 1;
-    }
-
-
 		/* compute mean and sum of squares for the left daughter node */
 		av = 0.0;
 		ss = 0.0;
 		for (j = ndstart; j <= ndendl; ++j) {
-      obsmat[(ncur + 1) * nsample + inbagidcs[jdex[j] - 1]] = 1;
 			d = y[jdex[j]-1];
 			m = j - ndstart;
 			ss += m * (av - d) * (av - d) / (m + 1);
@@ -159,7 +137,6 @@ void regTree(double *x, double *y, int mdim, int nsample, int *lDaughter,
 		av = 0.0;
 		ss = 0.0;
 		for (j = ndendl + 1; j <= ndend; ++j) {
-			obsmat[(ncur + 1) * nsample + inbagidcs[jdex[j] - 1]] = 1;
       d = y[jdex[j]-1];
 			m = j - (ndendl + 1);
 			ss += m * (av - d) * (av - d) / (m + 1);
@@ -206,7 +183,7 @@ void findBestSplit(double *x, int *jdex, double *y, int mdim, int nsample,
     double crit, critmax, critvar, suml, sumr, d, critParent;
 
     double *tselprob, mprob, totprob, xrand;
-    int jj, jold;
+    int jold;
 	
     tselprob = (double *) Calloc(mdim, double);
 
@@ -413,7 +390,7 @@ void predictRegTree(double *x, int nsample, int mdim,
 //  ---- new subroutine ---- iRF
 //  ---- select random split with importance sampling
 void selectsplit(double xrand, double *tselprob, double totprob, int last, int *j, int mdim){
-	int i, tmp, dum;
+	int i, tmp;
 	double *cumselprob;
 	double txrand;
 
