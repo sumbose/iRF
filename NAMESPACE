@@ -19,6 +19,8 @@ importFrom(doParallel, registerDoParallel)
 importFrom(doRNG, "%dorng%")
 importFrom(foreach, foreach, "%dopar%")
 importFrom(parallel, detectCores)
+importFrom(RColorBrewer, brewer.pal)
+importFrom(utils, combn)
 
 export(combine, getTree, grow, importance, margin, MDSplot, na.roughfix,
        randomForest, rfImpute, treesize, tuneRF, varImpPlot, 

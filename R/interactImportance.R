@@ -19,7 +19,7 @@ intImportance <- function(int, nf, yprec, select.id, weight) {
     return(data.table(prev1=0, prev0=0, prec=0))
 
   prev <- prevalence(weight, int.id, select.id)
-  prec <- mean(yprec[int.id & select.id], na.rm=TRUE)
+  prec <- mean(yprec[int.id & select.id])
   return(data.table(prev1=prev[1], prev0=prev[2], prec=prec))
 }
 
@@ -37,23 +37,33 @@ prevalence <- function(weight, idint, idcl) {
 precision <- function(read.forest, y, weights) {
   # Evaluate class proportion in each leaf node
   class.irf <- is.factor(y)
-  if (class.irf) y <- as.numeric(y) - 1
+  if (class.irf) {
+    y <- as.numeric(y) - 1
+  }
 
   stopifnot(all(weights %in% 0:1))
   if (!all(weights == 1)) weights <- 1 - weights
 
-  # TODO: implement for regression
-  ndcnt <- t(read.forest$node.obs) * weights
-  ndcntY <- Matrix::colSums(ndcnt * y)
-  ndcnt <- Matrix::colSums(ndcnt)
-  yprec <- ndcntY / ndcnt
-  yprec[is.nan(yprec)] <- 0
+  if (class.irf) {
+    ndcnt <- t(read.forest$node.obs) * weights
+    ndcntY <- Matrix::colSums(ndcnt * y)
+    ndcnt <- Matrix::colSums(ndcnt)
+    yprec <- ndcntY / ndcnt
+    yprec[ndcnt == 0] <- 0
+  } else {
+    nds <- t(read.forest$node.obs) * weights
+    ynds <- t(nds * y)
+    ndcnt <- Matrix::colSums(nds)
+    yprec <- Matrix::rowSums(ynds) / ndcnt
+    yprec[ndcnt == 0] <- 0  
+  }
   return(yprec)
 }
 
 subsetTest <- function(int, ints, importance) {
   # Compare prevalence of interaction on decision paths to expectation under
   # independent selection
+  require(stringr)
 
   if (length(int) == 1) return(c(prev.test=0, prec.test=0))
   ss <- combn(int, length(int) - 1, simplify=FALSE)

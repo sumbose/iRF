@@ -1,5 +1,5 @@
 Package: iRF
-Title: iterative Random Forests
+Title: Iterative Random Forests
 Version: 3.0.0
 Date: 2018-11-14
 License: GPL-3
@@ -12,12 +12,12 @@ Imports:
     dplyr,
     Rcpp,
     methods,
-    doMC,
+    doParallel,
     doRNG,
     foreach,
-    stringr
+    stringr,
+    RColorBrewer
 Suggests:
-    RColorBrewer,
     MASS,
     testthat
 LinkingTo:

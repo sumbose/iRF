@@ -11,12 +11,12 @@ gRIT <- function(x, y,
                          class.cut=NULL),
                  signed=TRUE,
                  ints.full=NULL,
-                 n.core=-1) {
+                 n.core=1) {
 
   out <- list()
   class.irf <- is.factor(y)
   if (n.core == -1) n.core <- detectCores()  
-  registerDoParallel(n.core)
+  if (n.core > 1) registerDoParallel(n.core)
 
   # Check rit parameters and set default values if not specified
   if (is.null(rand.forest) & is.null(read.forest))
@@ -35,6 +35,13 @@ gRIT <- function(x, y,
     rit.param$min.nd <- 1
   if (is.null(rit.param$class.cut) & !class.irf) 
     rit.param$class.cut <- median(y)
+  if (length(unique(y)) > 2 & class.irf) {
+    yy <- as.numeric(y) - 1
+    y[yy != rit.param$class.id] <- 0
+    y[yy == rit.param$class.id] <- 1
+    y <- as.factor(y)
+  }
+
 
   # Set feature names for grouping interactions
   if (is.null(varnames.grp) & !is.null(colnames(x)))
@@ -66,7 +73,8 @@ gRIT <- function(x, y,
   idcnt <- ndcnt >= rit.param$min.nd
   ndcnt <- ndcnt[idcnt]
   read.forest <- subsetReadForest(read.forest, idcnt)
-  
+  yprec <- yprec[idcnt]
+
   # Select class specific leaf nodes
   if (class.irf)
     idcl <- read.forest$tree.info$prediction == rit.param$class.id + 1
