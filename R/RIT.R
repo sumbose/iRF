@@ -1,3 +1,5 @@
+#' Random intersection trees
+#' @export 
 RIT <- function(z, z0, weights=rep(1, nrow(z)), branch=5, depth=10L, n_trees=100L, theta0=0.5, theta1=theta0,
                 min_inter_sz=2L, L=100L, n_cores=1L, output_list=FALSE) {
   ## check L, branch, depth, t, min_inter_sz, n_cores, output_list

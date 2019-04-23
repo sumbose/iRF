@@ -1,3 +1,31 @@
+#' @importFrom stringr str_replace_all str_remove_all str_split
+printAcc <- function(fit, y, class.irf) {
+  # Generate prediction accuracy string for printing
+  if (class.irf) {
+    acc <- auc(roc(fit$test$votes[,2], y))
+    out <- paste('AUROC: ', round(acc, 2))
+  } else {
+    pct.var <- 1 - mean((fit$test$predicted - y) ^ 2) / var(y)
+    pct.var <- max(pct.var, 0)
+    out <- paste('% var explained:', pct.var * 100)
+  }
+  return(out)
+}
+
+groupVars <- function(varnames.grp, x) {
+  # Generate grouped variable names
+  if (is.null(varnames.grp)) {
+    if (!is.null(colnames(x))) {
+      varnames.grp <- colnames(x)
+    } else {
+      varnames.grp <- 1:ncol(x)
+    }
+  }
+
+  stopifnot(length(varnames.grp) == ncol(x))
+  return(varnames.grp)
+}
+
 pasteInt <- function(x) {
   # Combine interaction into single string
   x <- paste(x, collapse='_')
@@ -54,10 +82,17 @@ unsign <- function(int) {
   return(str_replace_all(as.character(int), '[-\\+]', ''))
 }
 
+intSign <- function(int, split=TRUE) {
+  # Evaluate sign of interactions
+  if (!split) int <- str_split(int, '_')[[1]]
+  sgn <- rep(-1, length(int))
+  sgn[grep('+', int)] <- 1
+  return(sgn)
+}
+
 intSubsets <- function(int, split=TRUE) {
   # Generate order 1, s - 1, and s subsets of an order-s interaction
-
-  if (!split) int <- str_split(as.character(int), '_')[[1]]
+  if (!split) int <- strs_plit(as.character(int), '_')[[1]]
   if (length(int) == 1) return(int)
   sub.ord <- c(1, length(int) - 1, length(int))
   subs <- lapply(sub.ord, combn, x=int, simplify=FALSE)
@@ -65,3 +100,8 @@ intSubsets <- function(int, split=TRUE) {
   return(subs)
 }
 
+lreplicate <- function(n, expr, ...) {
+  # replicate with list return
+  out <- replicate(n, expr, ..., simplify=FALSE)
+  return(out)
+}

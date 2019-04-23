@@ -1,3 +1,6 @@
+#' Print random forest
+#' @method print randomForest
+#' @export
 "print.randomForest" <-
 function(x, ...) {
   cat("\nCall:\n", deparse(x$call), "\n")

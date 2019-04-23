@@ -1,6 +1,10 @@
+#' NA rough fix
+#' @export
 na.roughfix <- function(object, ...)
   UseMethod("na.roughfix")
 
+#' NA rough fix data frame
+#' @method na.roughfix data.frame
 na.roughfix.data.frame <- function(object, ...) {
   isfac <- sapply(object, is.factor)
   isnum <- sapply(object, is.numeric)
@@ -21,6 +25,8 @@ na.roughfix.data.frame <- function(object, ...) {
   object
 }
 
+#' NA rough fix default
+#' @method na.roughfix default
 na.roughfix.default <- function(object, ...) {
   if (!is.atomic(object))
     return(object)

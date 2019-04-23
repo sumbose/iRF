@@ -1,3 +1,5 @@
+#' Treesize
+#' @export
 treesize <- function(x, terminal=TRUE) {
   if(!inherits(x, "randomForest"))
     stop("This function only works for objects of class `randomForest'")

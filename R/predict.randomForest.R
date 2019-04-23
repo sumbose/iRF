@@ -1,3 +1,6 @@
+#' Predict random forest
+#' @method predict randomForest
+#' @export
 "predict.randomForest" <-
     function (object, newdata, type = "response", norm.votes = TRUE,
               predict.all=FALSE, proximity = FALSE, nodes=FALSE, cutoff, ...)
@@ -184,6 +187,7 @@
                   proximity = as.double(proxmatrix),
                   nodes = as.integer(nodes),
                   nodexts = as.integer(nodexts),
+                  DUP=FALSE,
                   PACKAGE = "iRF")[keepIndex]
             ## Apply bias correction if needed.
             yhat <- rep(NA, length(rn))
@@ -241,6 +245,7 @@
                  prox = as.integer(proximity),
                  proxmatrix = as.double(proxmatrix),
                  nodes = as.integer(nodes),
+                 DUP=FALSE,
                  PACKAGE = "iRF")
         if (out.type > 1) {
             out.class.votes <- t(matrix(t1$countts, nrow = nclass, ncol = ntest))

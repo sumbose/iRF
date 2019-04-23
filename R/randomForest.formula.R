@@ -1,3 +1,6 @@
+#' Random forest formula
+#' @method randomForest formula
+#' @export
 "randomForest.formula" <-
     function(formula, data = NULL, ..., subset, na.action = na.fail) {
 ### formula interface for randomForest.

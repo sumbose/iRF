@@ -1,8 +1,14 @@
+#' Importance
+#'
+#' @export
 importance <- function(x, ...)  UseMethod("importance")
 
 importance.default <- function(x, ...)
     stop("No method implemented for this class of object")
 
+#' Importance method for random forest
+#' @method importance randomForest
+#' @export
 importance.randomForest <- function(x, type=NULL, class=NULL, scale=TRUE,
                                     ...) {
     if (!inherits(x, "randomForest"))

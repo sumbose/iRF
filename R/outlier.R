@@ -1,5 +1,10 @@
+#' Outlier
+#' @export
 outlier <- function(x, ...) UseMethod("outlier")
 
+#' Random forest outlier
+#' @method outlier randomForest
+#' @export
 outlier.randomForest <- function(x, ...) {
     if (!inherits(x, "randomForest")) stop("x is not a randomForest object")
     if (x$type == "regression") stop("no outlier measure for regression")
@@ -7,6 +12,9 @@ outlier.randomForest <- function(x, ...) {
     outlier.default(x$proximity, x$y)
 }
 
+#' Default outlier
+#' @method outlier default
+#' @export
 outlier.default <- function(x, cls=NULL, ...) {
     if (nrow(x) != ncol(x)) stop ("x must be a square matrix")
     n <- nrow(x)

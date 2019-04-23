@@ -1,3 +1,5 @@
+#' Combine random forest
+#' @export 
 combine <- function(...) {  
    pad0 <- function(x, len) c(x, rep(0, len-length(x)))
    padm0 <- function(x, len) rbind(x, matrix(0, nrow=len-nrow(x),

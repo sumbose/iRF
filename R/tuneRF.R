@@ -1,3 +1,5 @@
+#' Tune random forest
+#' @export
 tuneRF <- function(x, y, mtryStart=if(is.factor(y)) floor(sqrt(ncol(x))) else
                    floor(ncol(x)/3), ntreeTry=50, stepFactor=2,
                    improve=0.05, trace=TRUE, plot=TRUE, doBest=FALSE, ...) {

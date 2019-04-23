@@ -1,39 +1,83 @@
-readForest <- function(rfobj, x, 
+#' Read forest
+#'
+#' Read out metadata from random forest decision paths
+#'
+#' @param rand.forest an object of class randomForest.
+#' @param x numeric feature matrix
+#' @param return.node.feature if True, will return sparse matrix indicating
+#'  features used on each decision path of the rand.forest
+#' @param return.node.obs if True, will return sparse matrix indicating
+#'  observations in x that fall in each leaf node of rand.forest.
+#' @param varnames.grp grouping "hyper-features" for RIT search. Features with
+#'  the same name will be treated as identical for interaction search.
+#' @param get.split if True, node feature matrix will indicate splitting
+#'  threshold for each selected feature.
+#' @param first.split if True, splitting threshold will only be evaluated for
+#'  the first time a feature is selected.
+#' @param n.core number of cores to use. If -1, all available cores are used.
+#'
+#' @return a list containing the follosing entries
+#' \itemize{
+#'    \item{tree.info}{data frame of metadata for each leaf node in rand.forest}
+#'    \item{node.feature}{optional sparse matrix indicating feature usage on
+#'      each decision path}
+#'    \item{node.obs}{optional sparse matrix indicating observations appearing
+#'      in each leaf node}
+#'  }
+#'
+#' @export
+#'
+#' @importFrom Matrix Matrix t sparseMatrix rowSums colSums
+#' @importFrom data.table data.table rbindlist
+#' @importFrom foreach foreach "%dopar%"
+#' @importFrom doParallel registerDoParallel stopImplicitCluster
+#' @importFrom doRNG "%dorng%"
+#' @importFrom parallel detectCores
+readForest <- function(rand.forest, x, 
                        return.node.feature=TRUE, 
                        return.node.obs=FALSE,
                        varnames.grp=NULL,
                        get.split=FALSE,
                        first.split=TRUE,
-                       n.core=-1){
+                       n.core=1){
   
-  if (is.null(rfobj$forest))
+  if (is.null(rand.forest$forest))
     stop('No Forest component in the randomForest object')
-  if (is.null(varnames.grp)) varnames.grp <- 1:ncol(x)
- 
+  varnames.grp <- groupVars(varnames.grp, x)
+
   if (n.core == -1) n.core <- detectCores()
-  registerDoParallel(n.core)
-  ntree <- rfobj$ntree
+  if (n.core > 1) registerDoParallel(n.core)
+  
+  ntree <- rand.forest$ntree
   n <- nrow(x)
   p <- length(unique(varnames.grp))
   out <- list()
   
   # Determine leaf nodes for observations in x
-  prf <- predict(rfobj, newdata=x, nodes=TRUE)
+  prf <- predict(rand.forest, newdata=x, nodes=TRUE)
   nodes <- attr(prf, 'nodes')
   
-  # read leaf node data from each tree in the forest 
+  # Read leaf node data from each tree in the forest 
+  a <- floor(ntree / n.core)
+  b <- ntree %% n.core
+  ntree.core <- c(rep(a + 1, b), rep(a, n.core - b))
+  core.id <- rep(1:n.core, times=ntree.core)
+
   suppressWarnings(
-  rd.forest <- foreach(tt=1:ntree) %dorng% {
-    readTree(tt, rfobj=rfobj, x=x, nodes=nodes,varnames.grp=varnames.grp,
-             return.node.feature=return.node.feature, 
-             return.node.obs=return.node.obs, get.split=get.split,
-             first.split=first.split)
+  rd.forest <- foreach(id=1:n.core) %dorng% {
+    tree.id <- which(core.id == id)
+    readTrees(k=tree.id, rand.forest=rand.forest, x=x, 
+              nodes=nodes,varnames.grp=varnames.grp,
+              return.node.feature=return.node.feature, 
+              return.node.obs=return.node.obs, 
+              get.split=get.split, first.split=first.split)
   })
-  
-  # aggregate node level metadata across forest
+  rd.forest <- unlist(rd.forest, recursive=FALSE)
+
+  # Aggregate node level metadata
   out$tree.info <- rbindlist(lapply(rd.forest, function(tt) tt$tree.info))
   
-  # aggregate sparse node level feature matrix across forest
+  # Aggregate sparse node level feature matrix
   nf <- lapply(rd.forest, function(tt) tt$node.feature)
   nf <- aggregateNodeFeature(nf)
   
@@ -45,18 +89,35 @@ readForest <- function(rfobj, x,
                                      dims=c(max(nf[,1]), 2 * p))
 
  
-  # aggregate sparse node level observation matrix across forest
+  # Aggregate sparse node level observation matrix
   if (return.node.obs) {
     nobs <- lapply(rd.forest, function(tt) tt$node.obs)
     nobs <- aggregateNodeFeature(nobs)
-    out$node.obs <- sparseMatrix(i=nobs[,1], j=nobs[,2], dims=c(max(nf[,1]), n))
+    out$node.obs <- sparseMatrix(i=nobs[,1], j=nobs[,2], 
+                                 dims=c(max(nf[,1]), n))
   }
 
+  stopImplicitCluster()
   return(out)
   
 }
 
-readTree <- function(rfobj, k, x, nodes,
+readTrees <- function(rand.forest, k, x, nodes,
+                      varnames.grp=1:ncol(x),
+                      return.node.feature=TRUE,
+                      return.node.obs=FALSE,
+                      get.split=FALSE,
+                      first.split=TRUE) {
+
+  out <- lapply(k, readTree, rand.forest=rand.forest, x=x, 
+                nodes=nodes,varnames.grp=varnames.grp,
+                return.node.feature=return.node.feature, 
+                return.node.obs=return.node.obs, 
+                get.split=get.split, first.split=first.split)
+  return(out)
+}
+
+readTree <- function(rand.forest, k, x, nodes,
                      varnames.grp=1:ncol(x), 
                      return.node.feature=TRUE,
                      return.node.obs=FALSE,
@@ -64,10 +125,10 @@ readTree <- function(rfobj, k, x, nodes,
                      first.split=TRUE) {
   
   n <- nrow(x) 
-  ntree <- rfobj$ntree
+  ntree <- rand.forest$ntree
 
   # Read tree metadata from forest
-  tree.info <- as.data.frame(getTree(rfobj, k))
+  tree.info <- as.data.frame(getTree(rand.forest, k))
   n.node <- nrow(tree.info)
   tree.info$node.idx <- 1:nrow(tree.info)
   tree.info$parent <- getParent(tree.info) %% n.node

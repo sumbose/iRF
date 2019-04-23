@@ -1,6 +1,6 @@
-## mylevels() returns levels if given a factor, otherwise 0.
-mylevels <- function(x) if (is.factor(x)) levels(x) else 0
-
+#' Random forest default function
+#' @method randomForest default
+#' @export
 "randomForest.default" <-
   function(x, y=NULL,  xtest=NULL, ytest=NULL, ntree=500,
            mtry= if (!is.null(y) && !is.factor(y))
@@ -523,4 +523,7 @@ mylevels <- function(x) if (is.factor(x)) levels(x) else 0
     }
     class(out) <- "randomForest"
     return(out)
-  }
+}
+
+## mylevels() returns levels if given a factor, otherwise 0.
+mylevels <- function(x) if (is.factor(x)) levels(x) else 0

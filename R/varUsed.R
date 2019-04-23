@@ -1,3 +1,5 @@
+#' Variable used
+#' @export
 varUsed <- function(x, by.tree=FALSE, count=TRUE) {
     if (!inherits(x, "randomForest"))
         stop(deparse(substitute(x)), "is not a randomForest object")

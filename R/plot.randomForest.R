@@ -1,3 +1,6 @@
+#' Plot method for randomForest
+#' @method plot randomForest
+#' @export
 plot.randomForest <- function(x, type="l", main=deparse(substitute(x)), ...) {
   if(x$type == "unsupervised")
     stop("No plot for unsupervised randomForest.")

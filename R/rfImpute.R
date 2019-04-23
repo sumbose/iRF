@@ -1,6 +1,11 @@
+#' Random forest impute
+#' @export
 rfImpute <- function(x, ...)
     UseMethod("rfImpute")
 
+#' Random forest impute formula
+#' @method rfImpute formula
+#' @export
 rfImpute.formula <- function(x, data, ..., subset) {
     if (!inherits(x, "formula"))
         stop("method is only for formula objects")
@@ -25,6 +30,9 @@ rfImpute.formula <- function(x, data, ..., subset) {
     ret
 }
 
+#' Random forest impute default
+#' @method rfImpute default
+#' @export
 rfImpute.default <- function(x, y, iter=5, ntree=300, ...) {
     if (any(is.na(y))) stop("Can't have NAs in", deparse(substitute(y)))
     if (!any(is.na(x))) stop("No NAs found in ", deparse(substitute(x)))

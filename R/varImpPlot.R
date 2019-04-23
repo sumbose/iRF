@@ -1,3 +1,5 @@
+#' Variable importance plot
+#' @export
 varImpPlot <- function(x, sort=TRUE,
                        n.var=min(30, nrow(x$importance)),
                        type=NULL, class=NULL, scale=TRUE, 
