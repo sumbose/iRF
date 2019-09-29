@@ -4,8 +4,7 @@
 \alias{interactPredict}
 \title{Predict interaction}
 \usage{
-interactPredict(x, int, read.forest, varnames.grp = NULL, min.nd = 1,
-  mask = TRUE)
+interactPredict(x, int, read.forest, varnames = NULL, min.nd = 1)
 }
 \arguments{
 \item{x}{numeric feature matrix}
@@ -14,14 +13,10 @@ interactPredict(x, int, read.forest, varnames.grp = NULL, min.nd = 1,
 
 \item{read.forest}{output of readForest.}
 
-\item{varnames.grp}{grouping "hyper-features" for RIT search. Features with
+\item{varnames}{grouping "hyper-features" for RIT search. Features with
 the same name will be treated as identical for interaction search.}
 
 \item{min.nd}{minimum leaf node size to extract decision rules from.}
-
-\item{mask}{if True, only leaf nodes containing the full interaction will be
-used to generate predictions. If false, any leaf node containing a subset of
-interacting features will be used to generate predictions.}
 }
 \value{
 a numeric vector of length nrow(x), entries indicating a predicted

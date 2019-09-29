@@ -5,16 +5,16 @@
 \title{Iterative random forests (iRF)}
 \usage{
 iRF(x, y, xtest = NULL, ytest = NULL, n.iter = 5, ntree = 500,
-  mtry.select.prob = rep(1, ncol(x)), iter.return = NULL,
-  select.iter = ifelse(is.null(iter.return), TRUE, FALSE),
-  rit.param = list(depth = 5, ntree = 500, nchild = 2, class.id = 1,
-  min.nd = 1, class.cut = NULL), varnames.grp = colnames(x),
-  n.bootstrap = 1, bs.sample = NULL, weights = rep(1, nrow(x)),
-  signed = TRUE, verbose = TRUE, n.core = 1,
+  mtry.select.prob = rep(1, ncol(x)), iter.return = n.iter,
+  int.return = NULL, select.iter = FALSE, rit.param = list(depth = 5,
+  ntree = 500, nchild = 2, class.id = 1, min.nd = 1, class.cut = NULL),
+  varnames.grp = colnames(x), n.bootstrap = 1, bs.sample = NULL,
+  weights = rep(1, nrow(x)), signed = TRUE, oob.importance = TRUE,
+  type = "randomForest", verbose = TRUE, n.core = 1,
   interactions.return = NULL, wt.pred.accuracy = NULL, ...)
 }
 \arguments{
-\item{x}{numeric feature matrix}
+\item{x}{numeric feature matrix.}
 
 \item{y}{response vector. If factor, classification is assumed.}
 
@@ -22,13 +22,17 @@ iRF(x, y, xtest = NULL, ytest = NULL, n.iter = 5, ntree = 500,
 
 \item{ytest}{response vector for test set.}
 
+\item{n.iter}{number of iterations to run.}
+
 \item{ntree}{number of random forest trees.}
 
 \item{mtry.select.prob}{feature weights for first iteration. Defaults to
 equal weights}
 
-\item{iter.return}{which iterations should interactions be returned for.
+\item{iter.return}{which iterations should the RF be returned for.
 Defaults to iteration with highest OOB accuracy.}
+
+\item{int.return}{which iterations should interacitons be returned for.}
 
 \item{select.iter}{if TRUE, returns interactions from iteration with highest
 OOB accuracy.}
@@ -43,24 +47,26 @@ regression to binary classes.}
 \item{varnames.grp}{grouping "hyper-features" for RIT search. Features with 
 the same name will be treated as identical for interaction search.}
 
-\item{n.bootstrap}{number of bootstrap samples to calculate stability scores.}
+\item{n.bootstrap}{number of bootstrap samples to calculate stability
+scores.}
 
-\item{bs.sample}{list of observation indices to use for bootstrap samples. If
-NULL, iRF will take standard bootstrap samples of observations.}
+\item{bs.sample}{list of observation indices to use for bootstrap samples.
+If NULL, iRF will take standard bootstrap samples of observations.}
 
 \item{weights}{numeric weight for each observation. Leaf nodes will be
 sampled for RIT with probability proprtional to the total weight of
 observations they contain.}
 
-\item{signed}{if TRUE, signed interactions will be returned}
+\item{signed}{if TRUE, signed interactions will be returned.}
+
+\item{oob.importance}{if TRUE, importance measures are evaluated on OOB
+samples.}
 
 \item{verbose}{if TRUE, display progress of iRF fit.}
 
 \item{n.core}{number of cores to use. If -1, all available cores are used.}
 
 \item{...}{additional arguments passed to iRF::randomForest.}
-
-\item{number}{of iterations to run.}
 }
 \value{
 A list containing the following entries:
@@ -73,6 +79,6 @@ A list containing the following entries:
  }
 }
 \description{
-Itaratively grow feature weighted random forests and search for prevalent
+Iteratively grow feature weighted random forests and search for prevalent
 interactions on decision paths.
 }

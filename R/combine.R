@@ -181,5 +181,12 @@ combine <- function(...) {
        rf$mse <- rf$rsq <- NULL
        if(haveTest) rf$test$mse <- rf$test$rsq <- NULL
    }   
-   rf
+   
+   ## Combine oob oservations if tracked
+   if (!is.null(rflist[[1]]$inbag)) {
+     inbag <- lapply(rflist, function(z) z$inbag)
+     rf$inbag <- do.call(cbind, inbag)
+   }
+
+   return(rf)
 }

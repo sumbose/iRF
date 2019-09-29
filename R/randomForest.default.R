@@ -521,6 +521,8 @@
                     matrix(rfout$inbag, nrow(rfout$inbag),
                            dimnames=list(x.row.names, NULL)) else NULL)
     }
+    # HACK!
+    out$y <- y
     class(out) <- "randomForest"
     return(out)
 }

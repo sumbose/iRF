@@ -16,11 +16,17 @@ Imports:
     doParallel,
     doRNG,
     stringr,
-    RColorBrewer
+    ranger,
+    fastmatch,
+    memoise,
+    RColorBrewer,
+    rgl
 Suggests:
     MASS,
-    testthat,
-    rgl
+    testthat (>= 2.1.0),
+    covr
+Remotes:
+    r-lib/covr
 LinkingTo:
     Rcpp
 Author: Sumanta Basu and Karl Kumbier (based on source codes from the R package 'randomForest' by Andy Liaw and Matthew Wiener and the original Fortran codes by Leo Breiman and Adele Cutler)

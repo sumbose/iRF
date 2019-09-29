@@ -11,7 +11,7 @@ permImportance <- function(rfobj, x, y, ints, n.perms=3, varnames.group=NULL,
   #   collapse, should predictions be averaged over permutations?
   #   n.cores: number of cores to parallelize over
 
-  if (is.null(varnames.group) & !is.null(colnames(x)))
+  if (is.null(varnames.group) && !is.null(colnames(x)))
     varnames.group <- colnames(x)
   if (is.null(colnames(x)))
     varnames.group <- as.character(1:ncol(x))
@@ -37,7 +37,7 @@ permPredict <- function(rfobj, x, int, n.perms=3, varnames.group=NULL,
   #   n.cores: number of cores to parallelize over
   
   n.cores <- min(n.cores, length(int))
-  if (is.null(varnames.group) & !is.null(colnames(x)))
+  if (is.null(varnames.group) && !is.null(colnames(x)))
     varnames.group <- colnames(x)
   
   pred.ints <- mclapply(int, predictInt, rfobj=rfobj, x=x, n.perms=n.perms, 

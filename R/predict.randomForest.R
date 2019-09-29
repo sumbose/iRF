@@ -24,7 +24,7 @@
 			object$predicted
 		}
         if (object$type == "regression") return(p)
-        if (proximity & is.null(object$proximity))
+        if (proximity && is.null(object$proximity))
             warning("cannot return proximity without new data if random forest object does not already have proximity")
         if (out.type == 1) {
             if (proximity) {
@@ -95,7 +95,7 @@
         x <- x[, vname, drop=FALSE]
     }
     if (is.data.frame(x)) {
-		isFactor <- function(x) is.factor(x) & ! is.ordered(x)
+		isFactor <- function(x) is.factor(x) & !is.ordered(x)
         xfactor <- which(sapply(x, isFactor))
         if (length(xfactor) > 0 && "xlevels" %in% names(object$forest)) {
             for (i in xfactor) {

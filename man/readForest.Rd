@@ -5,16 +5,16 @@
 \title{Read forest}
 \usage{
 readForest(rand.forest, x, return.node.feature = TRUE,
-  return.node.obs = FALSE, varnames.grp = NULL, get.split = FALSE,
+  return.node.obs = TRUE, varnames.grp = NULL, oob.importance = TRUE,
   first.split = TRUE, n.core = 1)
 }
 \arguments{
 \item{rand.forest}{an object of class randomForest.}
 
-\item{x}{numeric feature matrix}
+\item{x}{numeric feature matrix.}
 
 \item{return.node.feature}{if True, will return sparse matrix indicating
-features used on each decision path of the rand.forest}
+features used on each decision path of the rand.forest.}
 
 \item{return.node.obs}{if True, will return sparse matrix indicating
 observations in x that fall in each leaf node of rand.forest.}
@@ -22,8 +22,8 @@ observations in x that fall in each leaf node of rand.forest.}
 \item{varnames.grp}{grouping "hyper-features" for RIT search. Features with
 the same name will be treated as identical for interaction search.}
 
-\item{get.split}{if True, node feature matrix will indicate splitting
-threshold for each selected feature.}
+\item{oob.importance}{if TRUE, importance measures are evaluated on OOB
+samples.}
 
 \item{first.split}{if True, splitting threshold will only be evaluated for
 the first time a feature is selected.}
@@ -31,7 +31,7 @@ the first time a feature is selected.}
 \item{n.core}{number of cores to use. If -1, all available cores are used.}
 }
 \value{
-a list containing the follosing entries
+a list containing the following entries
 \itemize{
    \item{tree.info}{data frame of metadata for each leaf node in rand.forest}
    \item{node.feature}{optional sparse matrix indicating feature usage on

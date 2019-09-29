@@ -1,7 +1,17 @@
 #' Random intersection trees
 #' @export 
-RIT <- function(z, z0, weights=rep(1, nrow(z)), branch=5, depth=10L, n_trees=100L, theta0=0.5, theta1=theta0,
-                min_inter_sz=2L, L=100L, n_cores=1L, output_list=FALSE) {
+RIT <- function(z,
+                z0,
+                weights=rep(1, nrow(z)),
+                branch=5,
+                depth=10L,
+                n_trees=100L,
+                theta0=0.5,
+                theta1=theta0,
+                min_inter_sz=2L,
+                L=100L,
+                n_cores=1L,
+                output_list=FALSE) {
   ## check L, branch, depth, t, min_inter_sz, n_cores, output_list
   L <- as.integer(L)
   branch <- as.double(branch)
@@ -24,11 +34,11 @@ RIT <- function(z, z0, weights=rep(1, nrow(z)), branch=5, depth=10L, n_trees=100
     stop("n_trees must be >= 0")
   if (min_inter_sz < 2L)
     stop("min_inter_sz must be >= 2")
-  if (n_cores <1L)
+  if (n_cores < 1L)
     stop("n_cores must be >= 1")
-  if(theta0<0 || theta0>1)
+  if(theta0 < 0 || theta0 > 1)
     stop("theta0 must be between 0 and 1")
-  if(theta1<0 || theta1>1)
+  if(theta1 < 0 || theta1 > 1)
     stop("theta1 must be between 0 and 1")
   if (any(weights < 0))
     stop("weights must be >= 0")
@@ -36,11 +46,13 @@ RIT <- function(z, z0, weights=rep(1, nrow(z)), branch=5, depth=10L, n_trees=100
     stop("length weights must equal nrow z")
 
   
-  ## check z,z0 and convert to suitable data types for 'ExportedcppFunctions.cpp', then carry out RIT
+  # Check z,z0 and convert to suitable data types for
+  # 'ExportedcppFunctions.cpp', then carry out RIT
   is_2_class <- !missing(z0)
   is_sparse <- is(z,"Matrix")
   
-  # If z or z0 is sparse then also make the other one sparse, so that they are of the same type
+  # If z or z0 is sparse then also make the other one sparse, so that they are
+  # of the same type
   if (is_2_class) {
     if (is_sparse && !is(z0,"Matrix")) {
       z0 <- Matrix(z0, sparse=TRUE)
@@ -54,7 +66,8 @@ RIT <- function(z, z0, weights=rep(1, nrow(z)), branch=5, depth=10L, n_trees=100
   if (is_sparse) {
     if (is_2_class) {
       if (nrow(z0) == 0) stop("z0 must have at least one row")
-      if (ncol(z0) != ncol(z)) stop("z and z0 must have the same number of columns")
+      if (ncol(z0) != ncol(z))
+          stop("z and z0 must have the same number of columns")
       z0 <- Matrix::t(z0)
       z0 <- list(z0@i, z0@p)
     }
@@ -70,13 +83,15 @@ RIT <- function(z, z0, weights=rep(1, nrow(z)), branch=5, depth=10L, n_trees=100
     if (is_2_class) {
       if (!is.matrix(z0)) stop("z0 must be a matrix")
       if (nrow(z0) == 0) stop("z0 must have more than 0 rows")
-      if (ncol(z) != ncol(z0)) stop("z and z0 must have the same number of columns")
+      if (ncol(z) != ncol(z0))
+          stop("z and z0 must have the same number of columns")
     }
   }
 
   # carry out RIT_2class
   if (is_2_class) {
-    output <- RIT_2class(z, z0, L, branch, depth, n_trees, theta0, theta1, min_inter_sz, n_cores, is_sparse)
+    output <- RIT_2class(z, z0, L, branch, depth, n_trees, theta0, theta1,
+                         min_inter_sz, n_cores, is_sparse)
     
     # reorder output in decreasing prevalence
     prev_order <- order(output$Class1$Prevalence, decreasing=TRUE)
@@ -96,7 +111,8 @@ RIT <- function(z, z0, weights=rep(1, nrow(z)), branch=5, depth=10L, n_trees=100
   }
   
   # carry out RIT_1class
-  output<-RIT_1class(z, weights, L, branch, depth, n_trees, min_inter_sz, n_cores, is_sparse)
+  output<-RIT_1class(z, weights, L, branch, depth, n_trees,
+                     min_inter_sz, n_cores, is_sparse)
   
   # reorder output in decreasing prevalence
   prev_order <- order(output$Prevalence, decreasing=TRUE)
@@ -117,7 +133,9 @@ convert.to.data.frame <- function(Inter_Prev_List) {
   for (i in seq_along(Inter_Prev_List$Interactions)) {
     str_inter[i] <- paste(Inter_Prev_List$Interactions[[i]],collapse=" ")
   }
-  data <- data.frame(str_inter, Inter_Prev_List$Prevalence, stringsAsFactors = FALSE)
+  data <- data.frame(str_inter,
+                     Inter_Prev_List$Prevalence,
+                     stringsAsFactors = FALSE)
   colnames(data) <- c("Interaction", "Prevalence")
   return(data)
 }

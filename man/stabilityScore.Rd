@@ -5,10 +5,11 @@
 \title{Stability score}
 \usage{
 stabilityScore(x, y, ntree = 500, mtry.select.prob = rep(1, ncol(x)),
-  ints.eval = NULL, rit.param = list(depth = 5, ntree = 500, nchild =
-  2, class.id = 1, min.nd = 1, class.cut = NULL), varnames.grp = NULL,
-  n.bootstrap = 1, bs.sample = NULL, weights = rep(1, nrow(x)),
-  signed = TRUE, n.core = 1, ...)
+  ints.idx.eval = NULL, ints.eval = NULL, rit.param = list(depth = 5,
+  ntree = 500, nchild = 2, class.id = 1, min.nd = 1, class.cut = NULL),
+  varnames.grp = NULL, n.bootstrap = 1, bs.sample = NULL,
+  weights = rep(1, nrow(x)), signed = TRUE, oob.importance = TRUE,
+  type = "randomForest", n.core = 1, ...)
 }
 \arguments{
 \item{x}{numeric feature matrix}
@@ -19,6 +20,9 @@ stabilityScore(x, y, ntree = 500, mtry.select.prob = rep(1, ncol(x)),
 
 \item{mtry.select.prob}{feature weights for first iteration. Defaults to
 equal weights}
+
+\item{ints.idx.eval}{like \code{ints.eval}, but specifies the indice of the
+interactions instead of their names. Intended for internal use only.}
 
 \item{ints.eval}{interactions to evaluate. If specified, importance metrics
 will be evaluated for these interactions instead of those recovered by RIT.}
@@ -40,6 +44,9 @@ sampled for RIT with probability proprtional to the total weight of
 observations they contain.}
 
 \item{signed}{if TRUE, signed interactions will be returned}
+
+\item{oob.importance}{if TRUE, importance measures are evaluated on OOB
+samples.}
 
 \item{n.core}{number of cores to use. If -1, all available cores are used.}
 

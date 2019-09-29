@@ -156,7 +156,8 @@ features and their interactions.
 
 ### Feature usage on decision paths of large leaf nodes
 Consider a classification example as before. We iteratively grow weighted random
-forests, but save the forest components for further processing.
+forests, but save the forest components and in bag samples for further 
+processing.
 
 ```{r fit_irf2}
 sel.prob <- rep(1/p, p)
@@ -167,7 +168,7 @@ for (iter in 1:4){
   rf[[iter]] <- randomForest(x=X[train.id,], y=Y[train.id], 
                              xtest=X[test.id,], ytest=Y[test.id], 
                              mtry.select.prob=sel.prob, 
-                             keep.forest=TRUE)
+                             keep.forest=TRUE, keep.inbag=TRUE)
 
   # update selection probabilities for next iteration
   sel.prob <- rf[[iter]]$importance / sum(rf[[iter]]$importance)
@@ -209,7 +210,7 @@ each leaf node with probability proportional to the number of observations in
 each leaf node:
 
 ```{r rit}
-class1.nodes <- rforest$tree.info$prediction - 1 == 1
+class1.nodes <- rforest$tree.info$prediction == 1
 wt <- rforest$tree.info$size.node[class1.nodes]
 RIT(rforest$node.feature[class1.nodes,], weights=wt,
     depth=5, branch=2, n_trees=100)
@@ -224,13 +225,11 @@ bag samples and searches for interactions in the corresponding random forest.
 
 ```{r irf, message=FALSE}
 fit <- iRF(x=X[train.id,], 
-         y=Y[train.id], 
-         xtest=X[test.id,], 
-         ytest=Y[test.id], 
-         n.iter=5, 
-         n.core=n.cores,
-         select.iter = TRUE,
-         n.bootstrap=10
+           y=Y[train.id], 
+           n.iter=5, 
+           n.core=n.cores,
+           n.bootstrap=10,
+           int.return=5
         )
 ```
 
@@ -247,24 +246,30 @@ paper: https://arxiv.org/abs/1810.07287.
 
     + `int` indicates the interaction, with $+$ and $-$ describing whether the
       interaction is characterized by high or low levels of the feature. For
-      instance, the interaction `1+_2+_3+` describes an interaction that is
-      defined by high levels of $1, 2,$ and $3$. 
+      instance, the interaction `X1+_X2+_X3+` corresponds to decision rules of
+      the form $1(x_1 > \cdot \& x_2 > \cdot \& x_3 > \cdot).
+    
+    + `prevalence` indicates the proportion of class-1 leaf nodes that contain
+      the interaction, weighted y the size of the leaf nodes.
 
-    + `prevalence.diff` indicates the difference in prevalence between class-$0$ and
-      class-$1$ leaf nodes, `sta.diff` indicates the proportion of times this value
-      is greater than 0 across bootstrap replicates. 
+    + `precision` indicates the proportion of class-1 observations that fall in
+      leaf nodes that contain the innteraction.
 
-    + `independence` indicates the difference between the prevalence of an
-      interaction and the expected prevalence of an interaction if features were
-      selected independently, scaled by the prevalence of the interaction,
-      `sta.independence` indicates the proportion of times this value is greater
-      than 0 across bootstrap replicates. 
-
-    + `precision` indicates the difference between the proportion of class-1
-      observations in leaf nodes containing the interaction and the proportion of
-      class-1 leaf nodes in leaf nodes containing subsets of the interaction,
-      `sta.precision` indicates the proportion of times this value is greater than 0
+    + `cpe` indicates the class prevalence enrichment, which is defined as the
+      difference in prevalence betweenn class-0 and class-1 leaf nodes.
+      `sta.cpe` indicates the proportion of times this value is greater than 0
       across bootstrap replicates.
+
+    + `fsd` indicates the feature selection dependence, which is defined as the
+      difference between the prevalence of an interaction and its expected
+      prevalence if interacting features were selected independently of one
+      another. `sta.fsd` indicates the proportion of times this value is greater
+      than 0 across bootstrap replicates.
+
+    + `mip` indicates the mean increase in precision, which is defined as the
+      difference etween the precision of an interaction and the average
+      precision of lower order subsets. `sta.mip` indicates the proportion of
+      times this value is greater than 0 across bootstrap replicates.
 
     + `stability` indicates the proportion of times the interaction was recovered by
       RIT across bootstrap replicates.
@@ -277,7 +282,7 @@ head(fit$interaction)
 The selected interactions can be visualized using simple R functions like `dotchart`:
 
 ```{r dotchart, fig.height=6, fig.width=6}
-toplot <- fit$interaction$prevalence.diff
+toplot <- fit$interaction$cpe
 names(toplot) <- fit$interaction$int
 
 dotchart(rev(toplot[1:min(20, length(toplot))]), 
@@ -287,19 +292,14 @@ dotchart(rev(toplot[1:min(20, length(toplot))]),
 
 ### Visualizing interactions
 Interactions can be visualized using response surfaces, which depict the
-expected response as a function of interacting features. The `readForest`
-function uses the argument `get.split` to extract the splitting threshold from
-decision paths in a fitted random forest.
-
-```{r readforest_split}
-rforest <- readForest(fit$rf.list, x=X[train.id,], get.split=TRUE)
-```
-
-We use the output of `readForest` with `get.split = TRUE` to generate response
-surfaces as follows 
+expected response as a function of interacting features. We use the output of `readForest` 
+to generate response surfaces as follows
 ```{r response_surface}
 library(rgl)
-plotInt(x=X[test.id,], y=Y[test.id], int='1+_2+_3+', read.forest=rforest,
+
+rforest <- readForest(fit$rf.list, x=X[train.id,])
+plotInt(x=X[test.id,], y=Y[test.id], int='X1+_X2+_X3+', 
+        read.forest=rforest,
         xlab='X1', ylab='X2')
 rglwidget()
 ```

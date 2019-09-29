@@ -1,4 +1,7 @@
 #' Margin
+#' 
+#' Compute or plot the margin of predictions from a randomForest classifier.
+#'
 #' @export
 margin <- function(x, ...) {
     UseMethod("margin")
