@@ -90,10 +90,9 @@ iRF <- function(x, y,
 
   # Check input attributes for correct format
   require(doRNG, quiet=TRUE)
-  if (!class(x) %in% c('data.frame', 'matrix')) {
-    sp.mat <- attr(class(x), 'package') == 'Matrix'
-    if (is.null(sp.mat) || !sp.mat)
-      stop('x must be matrix or data frame')
+  x.class <- intersect(class(x), c('matrix', 'data.frame', 'Matrix'))
+  if (length(x.class) == 0) {
+    stop('x must be of class "matrix", "data.frame", or "Matrix"')
   }
 
   if (nrow(x) != length(y))

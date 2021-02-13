@@ -59,14 +59,11 @@ stabilityScore <- function(x, y,
                            ...) {
   
   # Check for valid input parameters
-  if (!class(x) %in% c('data.frame', 'matrix')) {
-    sp.mat <- attr(class(x), 'package') == 'Matrix'
-    if (!is.null(sp.mat)) {
-      if (!sp.mat) stop('x must be matrix or data frame')
-    } else {
-      stop('x must be matrix or data frame')
-    }
+  x.class <- intersect(class(x), c('matrix', 'data.frame', 'Matrix'))
+  if (length(x.class) == 0) {
+    stop('x must be of class "matrix", "data.frame", or "Matrix"')
   }
+
   if (nrow(x) != length(y))
     stop('x and y must contain the same number of observations')
   if (length(mtry.select.prob) != ncol(x))
