@@ -45,9 +45,9 @@ plotInt <- function(x, y, int, read.forest,
                       '#6e96c4', '#ffb003',  '#ff8300'), 
                     xlab=NULL, ylab=NULL, zlab=NULL, slab=NULL,
                     range.col=NULL,
-                    z.range=c(0, 1),
+                    z.range=NULL,
                     grid.size=50,
-                    min.surface=100,
+                    min.surface=20,
                     min.nd=5,
                     pred.prob=FALSE,
                     plot.enrich=FALSE,
@@ -76,8 +76,15 @@ plotInt <- function(x, y, int, read.forest,
   if (any(duplicated(varnames))) 
     stop('Replicate features not supported')
   
-  if (is.factor(y)) 
+  # Set z-axis scaling
+  if (is.factor(y)) {    
     y <- as.numeric(y) - 1
+  } 
+  
+  if (is.null(z.range)) {
+    z.range <- range(y)
+  }
+  
   # Get feature indices for interaction in nf, x, and leaf ndoes
   int <- str_split(int, '_')[[1]]
   int.clean <- str_remove_all(int, '[-\\+]')
@@ -113,7 +120,12 @@ plotInt <- function(x, y, int, read.forest,
   surf.scale <- ifelse(plot.enrich, mean(y), 1)
 
   surfaces <- lapply(ids, function(ii) {
-    if (sum(ii) < min.surface) return(NULL)
+    
+    if (sum(ii) < min.surface) {
+      warning('Fewer than min.surface observations, skipping surface')
+      return(NULL)
+    }
+
     genSurface(x[ii,], y[ii], int.nf[1:2], varnames=varnames, 
                rectangles=rectangles, min.nd=min.nd, surf.scale=surf.scale,
                filt.rule=filt.rule, drop0=drop0, grids=grids)
