@@ -9,17 +9,26 @@
 #' @importFrom ranger ranger
 "randomForest" <- function(x, ...) UseMethod("randomForest")
 
-parRF <- function(x, y, xtest=NULL, ytest=NULL, ntree=500,
-                  n.core=1, mtry.select.prob=rep(1, ncol(x)),
-                  type='randomForest', keep.inbag=TRUE, ...) {
-  
+parRF <- function(x, y, 
+                  xtest=NULL, 
+                  ytest=NULL, 
+                  ntree=500,
+                  n.core=1, 
+                  mtry=floor(sqrt(ncol(x))), 
+                  mtry.select.prob=rep(1, ncol(x)),
+                  type='randomForest', 
+                  keep.inbag=TRUE, ...) {
+
+  mtry.select.prob <- pmax(mtry.select.prob, 0)  
+  mtry.select.prob <- mtry.select.prob / sum(mtry.select.prob)
+
   # Wrapper function to run RF in parallel using randomForest or ranger
   if (type == 'randomForest') {
     rf <- randomForestPar(x, y, xtest, ytest, ntree, n.core, 
-                          mtry.select.prob, keep.inbag, ...)
+                          mtry, mtry.select.prob, keep.inbag, ...)
   } else if (type == 'ranger') {
     rf <- rangerPar(x, y, xtest, ytest, ntree, n.core, 
-                    mtry.select.prob, keep.inbag, ...)
+                    mtry, mtry.select.prob, keep.inbag, ...)
   } else {
     stop('type must be one of "randomForest" or "ranger"')
   }
@@ -27,24 +36,65 @@ parRF <- function(x, y, xtest=NULL, ytest=NULL, ntree=500,
   return(rf)
 }
 
-rangerPar <- function(x, y, xtest=NULL, ytest=NULL, ntree=500,
-                      n.core=1, mtry.select.prob=rep(1, ncol(x)),
-                      keep.inbag=TRUE, ...) {
+rangerPar <- function(x, y, 
+                      xtest=NULL, 
+                      ytest=NULL, 
+                      ntree=500,
+                      n.core=1, 
+                      mtry=floor(sqrt(ncol(x))), 
+                      mtry.select.prob=rep(1, ncol(x)),
+                      keep.inbag=TRUE, 
+                      ...) {
   
-  # Run feature weighted ranger in parallel
+  # Threshold feature weights at 0
+  mtry.select.prob[mtry.select.prob < 0] <- 0
   mtry.select.prob <- mtry.select.prob / sum(mtry.select.prob)
+  
+  # Format response for classification/regression
   class.irf <- is.factor(y)
   if (class.irf) y <- as.numeric(y) - 1
-  rf <- ranger(data=cbind(x, y), num.trees=ntree, verbose=FALSE,
-               dependent.variable.name='y', classification=class.irf,
-               num.threads=n.core, importance='impurity', keep.inbag=keep.inbag,
-               split.select.weights=mtry.select.prob, ...)
+
+  # Check if running local importance and set feature importance mode
+  dot.args <- list(...)
+
+  if('importance' %in% names(dot.args)) {
+      importance <- dot.args[['importance']]
+  } else {
+      importance <- 'impurity'
+  }
+
+  if ('local.importance' %in% names(dot.args)) {
+      if (dot.args[['local.importance']]) {
+          importance <- 'permutation'
+      }
+  }
+
+  dot.args[['importance']] <- NULL
+      
+  # Run ranger
+  rf <- ranger(data=cbind(x, y), 
+               num.trees=ntree, 
+               verbose=FALSE,
+               dependent.variable.name='y', 
+               classification=class.irf,
+               num.threads=n.core, 
+               keep.inbag=keep.inbag, 
+               mtry=mtry, 
+               split.select.weights=mtry.select.prob, 
+               importance=importance,
+               ...)
   return(rf)
 }
 
-randomForestPar <- function(x, y, xtest=NULL, ytest=NULL, ntree=500, 
-                            n.core=1, mtry.select.prob=rep(1, ncol(x)), 
-                            keep.inbag=TRUE, ...) {  
+randomForestPar <- function(x, y, 
+                            xtest=NULL, 
+                            ytest=NULL, 
+                            ntree=500, 
+                            n.core=1, 
+                            mtry=floor(sqrt(ncol(x))), 
+                            mtry.select.prob=rep(1, ncol(x)), 
+                            keep.inbag=TRUE, 
+                            ...) {  
   
   # Run randomForest in parallel using foreach and dorng
   if (n.core == -1) n.core <- detectCores()
@@ -60,6 +110,7 @@ randomForestPar <- function(x, y, xtest=NULL, ytest=NULL, ntree=500,
                   .multicombine=TRUE, .packages='iRF') %dorng% {
                     randomForest(x, y, xtest, ytest,
                                  ntree=ntree.id[i],
+                                 mtry=mtry,
                                  mtry.select.prob=mtry.select.prob,
                                  keep.forest=TRUE, keep.inbag=keep.inbag,
                                  ...)                         

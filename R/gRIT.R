@@ -175,6 +175,8 @@ gRIT <- function(x, y,
 runRIT <- function(read.forest, weights, rit.param, n.core=1) {
   # Run a weighted version of RIT across RF decision paths
   xrit <- read.forest$node.feature[weights > 0,]
+  if (nrow(xrit) == 0) return(character(0))
+
   interactions <- RIT(xrit,
                       weights=weights[weights > 0],
                       depth=rit.param$depth,

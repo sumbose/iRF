@@ -56,7 +56,8 @@ iRF <- function(x, y,
                 xtest=NULL, 
                 ytest=NULL, 
                 n.iter=5, 
-                ntree=500, 
+                ntree=500,
+                mtry=floor(sqrt(ncol(x))),
                 mtry.select.prob=rep(1, ncol(x)),
                 iter.return=n.iter, 
                 int.return=NULL,
@@ -141,11 +142,13 @@ iRF <- function(x, y,
     # Grow Random Forest on full data
     if (verbose) print(paste('iteration = ', iter))
     rf.list[[iter]] <- parRF(x, y, xtest, ytest, ntree=ntree, n.core=n.core, 
-                             type=type, mtry.select.prob=mtry.select.prob, 
+                             type=type, mtry=mtry, 
+                             mtry.select.prob=mtry.select.prob, 
                              keep.inbag=oob.importance, ...)
     
     # Update feature selection probabilities
     mtry.select.prob <- rf.list[[iter]][[imp.str]]
+    mtry <- min(mtry, sum(mtry.select.prob != 0))
   }
   
 
