@@ -14,6 +14,23 @@
 
 #include <R.h>
 #include <Rmath.h>
+
+// --- Manually add R’s memory management definitions to prevent GCC 14 from failing to locate them ---
+#include <R_ext/RS.h> 
+
+#ifndef Calloc
+#define Calloc(n, t) (t *) R_chk_calloc((size_t) (n), sizeof(t))
+#endif
+
+#ifndef Free
+#define Free(p) (R_chk_free((void *) (p)), (p) = NULL)
+#endif
+
+// Declare R’s underlying C functions to prevent implicit declaration errors
+void *R_chk_calloc(size_t, size_t);
+void R_chk_free(void *);
+// -----------------------------------------------------
+
 #include "rf.h"
 
 #ifdef C_CLASSTREE
