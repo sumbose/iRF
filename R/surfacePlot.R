@@ -174,7 +174,7 @@ plotInt <- function(x, y, int, read.forest,
     # Generate response surface for curent group
     plotInt2(surfaces[[i]], xlab=xlab, ylab=ylab, zlab=zlab, main=main.ii,
              col.pal=col.pal, range.col=range.col, z.range=z.range)
-    rgl.viewpoint(zoom=0.95, theta=-5, phi=-60)
+    rgl::view3d(zoom=0.95, theta=-5, phi=-60)
   
   }
 }
