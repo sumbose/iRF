@@ -11,13 +11,13 @@ To download and install the package, use `devtools`
 
 ```r
 library(devtools)
-devtools::install_github("karlkumbier/iRF2.0")
+devtools::install_github("Sumbose/iRF")
 ```
 Alternatively, the package can be installed by downloading this repository and
 using the command:
 
 ```r
-R CMD INSTALL iRF2.0
+R CMD INSTALL iRF
 ```
 
 You can subsequently load the package with the usual R commands:
@@ -26,13 +26,7 @@ You can subsequently load the package with the usual R commands:
 library(iRF)
 ```
 
-OSX users may need to intall gfortran to compile. This can be done with the
-following commands:
-
-```r
-curl -OL http://r.research.att.com/libs/gfortran-4.8.2-darwin13.tar.bz2
-sudo tar fvxz gfortran-4.8.2-darwin13.tar.bz2 -C /
-```
+MacOS/OSX users may need to intall gfortran to compile. This can be downloaded from https://mac.r-project.org/tools/.
 
 
 ### Workflow Overview
